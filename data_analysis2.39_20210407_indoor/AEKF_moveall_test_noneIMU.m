@@ -1,5 +1,5 @@
 clear all;clc;close all;
-load('data/move_07flat.mat')
+load('data/move_11.mat')
 
 
 global result;
@@ -16,7 +16,7 @@ Delta_u = 0.01;
 
 antenna_num = 8;
 index = antenna_num - 2;
-init_state = [3      -2        0     0    0    0      4         0];
+init_state = [0.1      2.7        0     0    0    0      4         0];
 init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001];
 
 Los_result(index,1).antenna_num = antenna_num;

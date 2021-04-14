@@ -1,13 +1,13 @@
 %%
-load('./data/move_07flat/LOS_los_result.mat')
-load('./data/move_07flat/LOS+MPC_mpc_result.mat')
+load('./data/move_11/Los_result.mat')
+load('./data/move_11/Mpc_result.mat')
 
 close all;
 M = moviein(useful_num);
-a(2,:) = -2:0.001:0;
-a(1,:) = 3;
-b(1,:) = 3:0.001:5;
-b(2,:) = 0;
+a(2,:) = 2.7:0.001:4;
+a(1,:) = 0;
+b(1,:) = 0:0.001:3;
+b(2,:) = 4;
 ab = [a b];
 Base(1,1) = 0;
 Base(2,1) = 0;
@@ -37,9 +37,9 @@ for i = 1:useful_num     % 旋转并记录每个画面
    hold on;
    hd(6) = scatter(Mpc_result(index,1).m(i,1),Mpc_result(index,1).m(i,2),50,"b+");
    hold on;
-   axis ([2 6 -2.5 1.5]);
+   axis ([-0.5 3.5 1.5 4.5]);
    if i == useful_num
-       legend([hd(1),hd(3),hd(4),hd(5),hd(6)],"Ground Truth","Anchor" ,"Obstacles","LOS Localization","LOS and NLOS Localization",'Location','SouthEast');
+       legend([hd(1),hd(5),hd(6)],"Ground Truth","LOS Localization","LOS and NLOS Localization",'Location','SouthWest');
    end
    
    M(i) = getframe;          % 抓取画面值

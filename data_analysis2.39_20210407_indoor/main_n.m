@@ -1,7 +1,7 @@
 clear all;clc;close all;
 %% 读取数据
 folder = './ml_data/20210407_indoor/';
-filenames{1} = [folder, 'move_11.json'];  %读取分析数据参数
+filenames{1} = [folder, 'move_07.json'];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
 cali_folder = './ml_data/20210407_indoor/';     %读取二次校准数据参数
@@ -92,7 +92,7 @@ end
 %% 对角度进行离线滤波
 save("result.mat")
 % EKF_angle();
-Flat_angle()
+% Flat_angle()
 
 
 
