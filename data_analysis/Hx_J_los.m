@@ -1,3 +1,12 @@
+% syms x;
+% syms y;
+% state = hx(x,y);
+% J=jacobian(state,[x,y]);
+% 
+% function [state] = hx(x,y)
+%     state(1,1) = norm([x,y]);
+%     state(2,1) = atan2(y,x);
+% end
 
 function Hx = Hx_J_los(m)
 

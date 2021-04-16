@@ -50,9 +50,9 @@ scatter(gt_sanjiao(:,1),gt_sanjiao(:,2));
 Rx4_floder = './四天线定位结果/';
 Rx8_floder = './八天线定位结果/';
 Square_floder = 'move_02 正方形/';
-SanJiao_floder = 'move_03_2 三角形/';
-Ling_floder = 'move_05 菱形/';
-Inf_floder = 'move_07 8字型/';
+SanJiao_floder = 'move_04 三角形/';
+Ling_floder = 'move_06_2 菱形/';
+Inf_floder = 'move_07_2 8字型/';
 Mpc_files = 'Mpc_result.mat';
 Los_files = 'Los_result.mat';
 

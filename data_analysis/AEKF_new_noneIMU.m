@@ -1,5 +1,5 @@
 clear all;clc;close all;
-load('data/20210413_indoor/move_05.mat')
+load('data/20210413_indoor/move_04.mat')
 
 
 global result;
@@ -16,9 +16,9 @@ Delta_u = 0.01;
 
 antenna_num = 8;
 index = antenna_num - 2;
-init_state = [4      -1        0     0.1    0    0      4         0];
+init_state = [4    -1        0     0    0    0      4         0];
 init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001];
-% init_P =     [0.0001   0.0001    0.001  0.001  0.001  0.001  0.0001  0.0001];
+
 Los_result(index,1).antenna_num = antenna_num;
 Los_result(index,1).m(1,:) = init_state(1,1:4);% 指定初值
 Los_result(index,1).P{1} = diag(init_P(1:4));  %相关噪声给大一些
@@ -32,12 +32,12 @@ Mpc_result(index,1).antenna_num = antenna_num;
 Mpc_result(index,1).m(1,:) = [init_state(1,1:4),init_state(1,7:8)];% 指定初值
 Mpc_result(index,1).P{1} =  diag([init_P(1:4),init_P(7:8)]); %相关噪声给大一些
 Mpc_result(index,1).Q{1} = [eye(4)/10000,zeros(4,2);zeros(2,4),zeros(2,2)];   %运动噪声小一点
-Mpc_result(index,1).R{1} = [eye(2)/100]; %观测噪声任取
+Mpc_result(index,1).R{1} = eye(2)/100; %观测噪声任取
 Mpc_result(index,1).e_flat(1,:) = zeros(2,1)';
 Mpc_result(index,1).w_flat(1,:) = zeros(6,1)';
 
-NR = 10;
-NQ = 10;
+NR = 100;
+NQ = 100;
 
 %% 开始进行LOS_EKF
 real_index = 10000000;
@@ -79,32 +79,10 @@ useful_num = length(result(index,1).los_d.data);
        %% 运动状态协方差应该公用
        if ( 1 )   %是否耦合
    
-       
-       %% 进行融合
-    if (Los_result(index,1).error_index(i,1) == 1)
-           
-           P_MPC = Mpc_result(index,1).P{i}(1:4,1:4);
-
-           Pg = (  P_MPC^(-1))^(-1);
-           X3 = (P_MPC^(-1)) * Mpc_result(index,1).m(i,1:4)';
-           Xg_hat = Pg * (X3);
-
-           Los_result(index,1).m(i,1:4) = Xg_hat';
-           Mpc_result(index,1).m(i,1:4) = Xg_hat';
-
-
-           Mpc_result(index,1).P{i}(1:4,1:4)  = 1* Pg;
-%            Los_result(index,1).P{i}(1:4,1:4) = 2*Pg;
-%            
-           
-           Avg_result.m(i,:) = Xg_hat';
-           Avg_result.P{i} = Pg;
-           
-    else
-%            Mpc_result(index,1).Q{i}(1:4,1:4) = Los_result(index,1).Q{i}(1:4,1:4) ;
-           
+                
            coef(1) = 1;
            coef(2) = 1;
+           
            P_LOS = Los_result(index,1).P{i}(1:4,1:4) * coef(1);
            P_MPC = Mpc_result(index,1).P{i}(1:4,1:4) * coef(2);
 
@@ -113,37 +91,39 @@ useful_num = length(result(index,1).los_d.data);
            X3 = (P_MPC^(-1)) * Mpc_result(index,1).m(i,1:4)';
            Xg_hat = Pg * (X2 + X3);
            
-           %做Q的信息融合
-           Q1 = (P_LOS^(-1)) * Los_result(index,1).Q{i}(1:4,1:4);
-           Q2 = (P_MPC^(-1)) * Mpc_result(index,1).Q{i}(1:4,1:4);
-           Qg_hat = Pg * (Q1 + Q2);
-%            Los_result(index,1).Q{i}(1:4,1:4) = Qg_hat;
-           Mpc_result(index,1).Q{i}(1:4,1:4) = Qg_hat;
-           
-           
-           
+           temp_los = Los_result(index,1).m(i,1:4)'; %融合前的值
            Los_result(index,1).m(i,1:4) = Xg_hat';
            Mpc_result(index,1).m(i,1:4) = Xg_hat';
            
            coef_sum = 1/coef(1) + 1/coef(2);
            P_coef(1) = coef(1) * coef_sum;
            P_coef(2) = coef(2) * coef_sum;
-           
 
            Los_result(index,1).P{i}(1:4,1:4) = P_coef(1) * Pg;
-           Mpc_result(index,1).P{i}(1:4,1:4)  = P_coef(2)  *  Pg;
-
-           Avg_result.m(i,:) = Xg_hat';
-           Avg_result.P{i} = Pg;
-    end
-
+           Mpc_result(index,1).P{i}(1:4,1:4) = P_coef(2) * Pg;
+           
+           
+           
+           %% 不根据各个子滤波器的结果进行运动噪声矩阵的更新 而是根据融合的结果进行更新
+           if (norm(temp_los - Xg_hat(1:4,1))<=0.1) % 仅在直达径比较好的时候进行融合
+           
+           a1 = (NQ -1)/NQ;
+           m_minus = A * Los_result(index,1).m(i-1,1:4)';
+           P_minus = A * Los_result(index,1).P{i-1}(1:4,1:4) * A' + Los_result(index,1).Q{i-1}(1:4,1:4); % 这里的 Q{i-1} 矩阵是融合的结果
+           
+           wk_hat = Xg_hat - m_minus;
+           wk_flat = a1 * Los_result(index,1).w_flat(i-1,:)' + 1/NQ * wk_hat; % 这里的 Los.w_flat(i-1,:) 也是已经融合过的结果
+           Delta_Qk = 1/(NQ-1) * (wk_hat - wk_flat)*(wk_hat - wk_flat)' + 1/NQ * ( P_minus - A * Los_result(index,1).P{i-1}(1:4,1:4) * A');
+           Qk = abs(diag(diag(a1 * Los_result(index,1).Q{i-1}(1:4,1:4) + Delta_Qk)));
+           Los_result(index,1).w_flat(i,1:4) = wk_flat';
+           Los_result(index,1).Q{i}(1:4,1:4) = Qk;
+           Mpc_result(index,1).w_flat(i,1:4) = wk_flat';
+           Mpc_result(index,1).Q{i}(1:4,1:4) = Qk;       
+           end
+           
        end
  end
  save("Mpc_result.mat","Mpc_result");
-
-
-
-
 
 %% 开始不融合
 
@@ -236,8 +216,8 @@ useful_num = length(result(index,1).los_d.data);
  end
  save("Los_result.mat","Los_result");
  run("DrawTwoFast.m");
-% %  run("DrawTwo.m");
-% 
+
+
 % 
 % 
 % 
