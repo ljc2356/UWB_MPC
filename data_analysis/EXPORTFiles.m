@@ -14,7 +14,7 @@ parfor i = 1:file_num
     FileNames = {File.name}';
     
     filenames{i} = [folder, FileNames{i,1}];
-    main_n_Anglefunction(FileNames{i,1});
+    main_n_function(FileNames{i,1});
 end
 
  delete(gcp('nocreate'))

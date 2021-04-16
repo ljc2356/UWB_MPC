@@ -41,17 +41,17 @@ for i = 1:useful_num     % 旋转并记录每个画面
 %        legend([hd(1),hd(5),hd(6)],"Ground Truth","LOS Localization","LOS and NLOS Localization",'Location','SouthWest');
 %    end
    
-   M(i) = getframe;          % 抓取画面值
-   im=frame2im(M(i));
-   [I,map]=rgb2ind(im,256);
-
-    k=i-0;
-    if k==1
-        imwrite(I,map,"定位动画.gif",'gif','Loopcount',inf,...
-            'DelayTime',0.05);%loopcount只是在i==1的时候才有用
-    else
-        imwrite(I,map,"定位动画.gif",'gif','WriteMode','append',...
-            'DelayTime',0.05);%DelayTime用于设置gif文件的播放快慢
-    end
+%    M(i) = getframe;          % 抓取画面值
+%    im=frame2im(M(i));
+%    [I,map]=rgb2ind(im,256);
+% 
+%     k=i-0;
+%     if k==1
+%         imwrite(I,map,"定位动画.gif",'gif','Loopcount',inf,...
+%             'DelayTime',0.05);%loopcount只是在i==1的时候才有用
+%     else
+%         imwrite(I,map,"定位动画.gif",'gif','WriteMode','append',...
+%             'DelayTime',0.05);%DelayTime用于设置gif文件的播放快慢
+%     end
 
 end

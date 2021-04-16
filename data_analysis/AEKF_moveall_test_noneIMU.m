@@ -1,5 +1,5 @@
 clear all;clc;close all;
-load('data/20210413_indoor/move_07.mat')
+load('data/20210413_indoor/move_03_2.mat')
 
 
 global result;
@@ -14,9 +14,9 @@ Delta_u = 0.01;
 
 %%
 
-antenna_num = 8;
+antenna_num = 4;
 index = antenna_num - 2;
-init_state = [3      -1        0     0.1    0    0      4         0];
+init_state = [4      -1        0     0.1    0    0      4         0];
 init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001];
 % init_P =     [0.0001   0.0001    0.001  0.001  0.001  0.001  0.0001  0.0001];
 Los_result(index,1).antenna_num = antenna_num;
@@ -101,7 +101,7 @@ useful_num = length(result(index,1).los_d.data);
            Avg_result.P{i} = Pg;
            
     else
-           Mpc_result(index,1).Q{i}(1:4,1:4) = Los_result(index,1).Q{i}(1:4,1:4) ;
+%            Mpc_result(index,1).Q{i}(1:4,1:4) = Los_result(index,1).Q{i}(1:4,1:4) ;
            
            coef(1) = 1;
            coef(2) = 1;
@@ -112,6 +112,13 @@ useful_num = length(result(index,1).los_d.data);
            X2 = (P_LOS^(-1)) * Los_result(index,1).m(i,1:4)';
            X3 = (P_MPC^(-1)) * Mpc_result(index,1).m(i,1:4)';
            Xg_hat = Pg * (X2 + X3);
+           
+           %做Q的信息融合
+           Q1 = (P_LOS^(-1)) * Los_result(index,1).Q{i}(1:4,1:4);
+           Q2 = (P_MPC^(-1)) * Mpc_result(index,1).Q{i}(1:4,1:4);
+           Qg_hat = Pg * (Q1 + Q2);
+%            Los_result(index,1).Q{i}(1:4,1:4) = Qg_hat;
+           Mpc_result(index,1).Q{i}(1:4,1:4) = Qg_hat;
            
            Los_result(index,1).m(i,1:4) = Xg_hat';
            Mpc_result(index,1).m(i,1:4) = Xg_hat';
@@ -226,12 +233,13 @@ useful_num = length(result(index,1).los_d.data);
        end
  end
  save("Los_result.mat","Los_result");
-%  run("DrawTwo.m");
-
-
-
-
-
+ run("DrawTwoFast.m");
+% %  run("DrawTwo.m");
+% 
+% 
+% 
+% 
+% 
 
 
 
