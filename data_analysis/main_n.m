@@ -25,11 +25,12 @@ run("Properties.m");
 %% 生成模板
 [ Template, Conv_Template ] = GenerateTemplate(Back_filenames);
 %% 定位多径位置
-% figure(1);
-% for i = 1:8
-% hd = plot(abs(After_records(1).uwbResult.cir{1,i}));
-% hold on;
-% end
+close all
+for i = 7
+    figure();
+    hd = plot(abs(After_records(2,1).uwbResult.cir{1,i}));
+end
+Ori_CIR = abs(After_records(2).uwbResult.cir{1,7});
 % set(hd,'color','b','linewidth',2);
 % xlabel('Time [ns]');
 % ylabel('Amplitude');

@@ -1,8 +1,7 @@
 
 % load('Mpc_result.mat')
 % load('Los_result.mat')
-close all;
-M = moviein(useful_num);
+close all;clear a b ab Base cl;
 a(2,:) = -2:0.001:0;
 a(1,:) = 3;
 b(1,:) = 3:0.001:5;

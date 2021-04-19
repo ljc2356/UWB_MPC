@@ -4,7 +4,8 @@ function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template)
 % Conv_Template 8天线的匹配模板
     run("Properties.m");
     Signal_length = length(Signal_Cir{1,1});
-    for kk = 1:8
+      for kk = 1:8
+%      for kk = 7
         This_Sig_tem = abs(Signal_Cir{1,kk}')/max(abs(Signal_Cir{1,kk}(8,1))); %这里就是针对第八位置做归一化
 
 %       This_Sig = interp1(1:Signal_length,This_Sig_tem(1:Signal_length),1:1/intersize:(Signal_length),'pchip');
@@ -13,7 +14,14 @@ function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template)
         Conv_Sig_temp(kk,:) = conv(Filter_Sig(kk,:),Conv_Template(kk,:));
 
     end
-    
+%     figure()
+%     plot(Filter_Sig(kk,:) )
+%         figure()
+%     plot(Template(kk,:) )
+%             figure()
+%     plot(This_Sig)
+%     Back = Template(kk,:);
+%     Filter =  Filter_Sig(kk,:);
 
     mean_Conv_sig(1,:) = mean(Conv_Sig_temp,1);
     mean_Conv_sig(2,:) = 1:1/intersize:(Signal_length+window_width-1);

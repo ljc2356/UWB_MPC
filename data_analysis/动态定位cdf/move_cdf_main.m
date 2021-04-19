@@ -55,119 +55,178 @@ Ling_floder = 'move_06_2 ÁâÐÎ/';
 Inf_floder = 'move_07_2 8×ÖÐÍ/';
 Mpc_files = 'Mpc_result.mat';
 Los_files = 'Los_result.mat';
+IMU_files = 'IMU_result.mat';
+
 
 square_Mpc_result_8rx = [Rx8_floder,Square_floder,Mpc_files];
 square_Los_result_8rx = [Rx8_floder,Square_floder,Los_files];
+square_IMU_result_8rx = [Rx8_floder,Square_floder,IMU_files];
 load(square_Mpc_result_8rx )
 load(square_Los_result_8rx)
+load(square_IMU_result_8rx)
 x_fp_square_8rx = Los_result(6,1).m(:,1:2);
 x_mpc_square_8rx = Mpc_result(6,1).m(:,1:2);
+x_imu_square_8rx = IMU_result.m(:,1:2);
+
 
 square_Mpc_result_4rx = [Rx4_floder,Square_floder,Mpc_files];
 square_Los_result_4rx = [Rx4_floder,Square_floder,Los_files];
+square_IMU_result_4rx = [Rx4_floder,Square_floder,IMU_files];
 load(square_Mpc_result_4rx)
 load(square_Los_result_4rx)
+load(square_IMU_result_4rx)
 x_fp_square_4rx = Los_result(2,1).m(:,1:2);
 x_mpc_square_4rx = Mpc_result(2,1).m(:,1:2);
-
+x_imu_square_4rx = IMU_result.m(:,1:2);
 
 lingxing_Mpc_result_8rx = [Rx8_floder,Ling_floder,Mpc_files];
 lingxing_Los_result_8rx = [Rx8_floder,Ling_floder,Los_files];
+lingxing_IMU_result_8rx = [Rx8_floder,Ling_floder,IMU_files];
 load(lingxing_Mpc_result_8rx)
 load(lingxing_Los_result_8rx)
+load(lingxing_IMU_result_8rx)
 x_fp_lingxing_8rx = Los_result(6,1).m(:,1:2);
 x_mpc_lingxing_8rx = Mpc_result(6,1).m(:,1:2);
+x_imu_lingxing_8rx = IMU_result.m(:,1:2);
 
 lingxing_Mpc_result_4rx = [Rx4_floder,Ling_floder,Mpc_files];
 lingxing_Los_result_4rx = [Rx4_floder,Ling_floder,Los_files];
+lingxing_IMU_result_4rx = [Rx4_floder,Ling_floder,IMU_files];
 load(lingxing_Mpc_result_4rx)
 load(lingxing_Los_result_4rx)
+load(lingxing_IMU_result_4rx)
 x_fp_lingxing_4rx = Los_result(2,1).m(:,1:2);
 x_mpc_lingxing_4rx = Mpc_result(2,1).m(:,1:2);
+x_imu_lingxing_4rx = IMU_result.m(:,1:2);
+
 
 Inf_Mpc_result_8rx= [Rx8_floder,Inf_floder,Mpc_files];
 Inf_Los_result_8rx = [Rx8_floder,Inf_floder,Los_files];
+Inf_IMU_result_8rx = [Rx8_floder,Inf_floder,IMU_files];
 load(Inf_Mpc_result_8rx)
 load(Inf_Los_result_8rx)
+load(Inf_IMU_result_8rx)
 x_fp_8zixing_8rx = Los_result(6,1).m(:,1:2);
 x_mpc_8zixing_8rx = Mpc_result(6,1).m(:,1:2);
+x_imu_8zixing_8rx = IMU_result.m(:,1:2);
 
 Inf_Mpc_result_4rx= [Rx4_floder,Inf_floder,Mpc_files];
 Inf_Los_result_4rx = [Rx4_floder,Inf_floder,Los_files];
+Inf_IMU_result_4rx = [Rx4_floder,Inf_floder,IMU_files];
 load(Inf_Mpc_result_4rx)
 load(Inf_Los_result_4rx)
+load(Inf_IMU_result_4rx)
 x_fp_8zixing_4rx = Los_result(2,1).m(:,1:2);
 x_mpc_8zixing_4rx = Mpc_result(2,1).m(:,1:2);
+x_imu_8zixing_4rx = IMU_result.m(:,1:2);
 
 sanjiao_Mpc_result_8rx = [Rx8_floder,SanJiao_floder,Mpc_files];
 sanjiao_Los_result_8rx = [Rx8_floder,SanJiao_floder,Los_files];
+sanjiao_IMU_result_8rx = [Rx8_floder,SanJiao_floder,IMU_files];
 load(sanjiao_Mpc_result_8rx)
 load(sanjiao_Los_result_8rx)
+load(sanjiao_IMU_result_8rx)
 x_fp_sanjiao_8rx = Los_result(6,1).m(:,1:2);
 x_mpc_sanjiao_8rx = Mpc_result(6,1).m(:,1:2);
+x_imu_sanjiao_8rx = IMU_result.m(:,1:2);
 
 sanjiao_Mpc_result_4rx = [Rx4_floder,SanJiao_floder,Mpc_files];
 sanjiao_Los_result_4rx = [Rx4_floder,SanJiao_floder,Los_files];
+sanjiao_IMU_result_4rx = [Rx4_floder,SanJiao_floder,IMU_files];
 load(sanjiao_Mpc_result_4rx)
 load(sanjiao_Los_result_4rx)
+load(sanjiao_IMU_result_4rx)
 x_fp_sanjiao_4rx = Los_result(2,1).m(:,1:2);
 x_mpc_sanjiao_4rx = Mpc_result(2,1).m(:,1:2);
+x_imu_sanjiao_4rx = IMU_result.m(:,1:2);
 
 for i = 1 : length(x_fp_square_8rx)
     temp1 = x_fp_square_8rx(i,:) - gt_square;
     temp2 = x_mpc_square_8rx(i,:) - gt_square;
     temp3 = x_fp_square_4rx(i,:) - gt_square;
     temp4 = x_mpc_square_4rx(i,:) - gt_square;
+    temp5 = x_imu_square_8rx(i,:) - gt_square;
+    temp6 = x_imu_square_4rx(i,:) - gt_square;
+    
     dis1 = sum(temp1.^2,2).^(1/2);
     dis2 = sum(temp2.^2,2).^(1/2);
     dis3 = sum(temp3.^2,2).^(1/2);
     dis4 = sum(temp4.^2,2).^(1/2);
+    dis5 = sum(temp5.^2,2).^(1/2);
+    dis6 = sum(temp6.^2,2).^(1/2);
+    
     md_fp_square_8rx(i) = min(dis1);
     md_mpc_square_8rx(i) = min(dis2);
     md_fp_square_4rx(i) = min(dis3);
     md_mpc_square_4rx(i) = min(dis4);
+    md_imu_square_8rx(i) = min(dis5);
+    md_imu_square_4rx(i) = min(dis6);
 end
 for i = 1 : length(x_fp_lingxing_8rx)
     temp1 = x_fp_lingxing_8rx(i,:) - gt_lingxing;
     temp2 = x_mpc_lingxing_8rx(i,:) - gt_lingxing;
     temp3 = x_fp_lingxing_4rx(i,:) - gt_lingxing;
     temp4 = x_mpc_lingxing_4rx(i,:) - gt_lingxing;
+    temp5 = x_imu_lingxing_8rx(i,:) - gt_lingxing;
+    temp6 = x_imu_lingxing_4rx(i,:) - gt_lingxing;
+    
     dis1 = sum(temp1.^2,2).^(1/2);
     dis2 = sum(temp2.^2,2).^(1/2);
     dis3 = sum(temp3.^2,2).^(1/2);
     dis4 = sum(temp4.^2,2).^(1/2);
+    dis5 = sum(temp5.^2,2).^(1/2);
+    dis6 = sum(temp6.^2,2).^(1/2);
+    
     md_fp_lingxing_8rx(i) = min(dis1);
     md_mpc_lingxing_8rx(i) = min(dis2);
     md_fp_lingxing_4rx(i) = min(dis3);
     md_mpc_lingxing_4rx(i) = min(dis4);
+    md_imu_lingxing_8rx(i) = min(dis5);
+    md_imu_lingxing_4rx(i) = min(dis6);
 end
 for i = 1 : length(x_fp_8zixing_8rx)
     temp1 = x_fp_8zixing_8rx(i,:) - gt_8zixing;
     temp2 = x_mpc_8zixing_8rx(i,:) - gt_8zixing;
     temp3 = x_fp_8zixing_4rx(i,:) - gt_8zixing;
     temp4 = x_mpc_8zixing_4rx(i,:) - gt_8zixing;
+    temp5 = x_imu_8zixing_8rx(i,:) - gt_8zixing;
+    temp6 = x_imu_8zixing_4rx(i,:) - gt_8zixing;
+    
     dis1 = sum(temp1.^2,2).^(1/2);
     dis2 = sum(temp2.^2,2).^(1/2);
     dis3 = sum(temp3.^2,2).^(1/2);
     dis4 = sum(temp4.^2,2).^(1/2);
+    dis5 = sum(temp5.^2,2).^(1/2);
+    dis6 = sum(temp6.^2,2).^(1/2);
+    
     md_fp_8zixing_8rx(i) = min(dis1);
     md_mpc_8zixing_8rx(i) = min(dis2);
     md_fp_8zixing_4rx(i) = min(dis3);
     md_mpc_8zixing_4rx(i) = min(dis4);
+    md_imu_8zixing_8rx(i) = min(dis5);
+    md_imu_8zixing_4rx(i) = min(dis6);
 end
 for i = 1 : length(x_fp_sanjiao_8rx)
     temp1 = x_fp_sanjiao_8rx(i,:) - gt_sanjiao;
     temp2 = x_mpc_sanjiao_8rx(i,:) - gt_sanjiao;
     temp3 = x_fp_sanjiao_4rx(i,:) - gt_sanjiao;
     temp4 = x_mpc_sanjiao_4rx(i,:) - gt_sanjiao;
+    temp5 = x_imu_sanjiao_8rx(i,:) - gt_sanjiao;
+    temp6 = x_imu_sanjiao_4rx(i,:) - gt_sanjiao;
+    
     dis1 = sum(temp1.^2,2).^(1/2);
     dis2 = sum(temp2.^2,2).^(1/2);
     dis3 = sum(temp3.^2,2).^(1/2);
     dis4 = sum(temp4.^2,2).^(1/2);
+    dis5 = sum(temp5.^2,2).^(1/2);
+    dis6 = sum(temp6.^2,2).^(1/2);
+    
     md_fp_sanjiao_8rx(i) = min(dis1);
     md_mpc_sanjiao_8rx(i) = min(dis2);
     md_fp_sanjiao_4rx(i) = min(dis3);
     md_mpc_sanjiao_4rx(i) = min(dis4);
+    md_imu_sanjiao_8rx(i) = min(dis5);
+    md_imu_sanjiao_4rx(i) = min(dis6);
 end
 
 %%
@@ -182,6 +241,10 @@ h(3) = cdfplot(md_fp_square_4rx);
 set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
 h(4) = cdfplot(md_mpc_square_4rx);
 set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+h(5) = cdfplot(md_imu_square_8rx);
+set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(6) = cdfplot(md_imu_square_4rx);
+set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
 lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
 set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
 xlabel('Error [m]');
@@ -198,12 +261,18 @@ h(3) = cdfplot(md_fp_lingxing_4rx);
 set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
 h(4) = cdfplot(md_mpc_lingxing_4rx);
 set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+
+h(5) = cdfplot(md_imu_lingxing_8rx);
+set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(6) = cdfplot(md_imu_lingxing_4rx);
+set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
 lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
 set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
 xlabel('Error [m]');
 ylabel('CDF');
 set(gca,'FontSize',14);  
 title('lingxing only');
+
 %8×ÖÐÎ
 figure
 h(1) = cdfplot(md_fp_8zixing_8rx); hold on;
@@ -214,6 +283,11 @@ h(3) = cdfplot(md_fp_8zixing_4rx);
 set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
 h(4) = cdfplot(md_mpc_8zixing_4rx);
 set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+
+h(5) = cdfplot(md_imu_8zixing_8rx);
+set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(6) = cdfplot(md_imu_8zixing_4rx);
+set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
 lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
 set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
 xlabel('Error [m]');
@@ -230,6 +304,11 @@ h(3) = cdfplot(md_fp_sanjiao_4rx);
 set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
 h(4) = cdfplot(md_mpc_sanjiao_4rx);
 set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+h(5) = cdfplot(md_imu_sanjiao_8rx);
+set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(6) = cdfplot(md_imu_sanjiao_4rx);
+set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
+
 lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
 set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
 xlabel('Error [m]');

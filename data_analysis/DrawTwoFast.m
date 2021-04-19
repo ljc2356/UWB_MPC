@@ -24,7 +24,6 @@ hold on;
 hd(4) = plot(c1(1,:),c1(2,:));
 hold on;
 
-
 set(hd(1),'color','g','linestyle','-','linewidth',2)
 set(hd(4),'color',[1 0.5 0],'linestyle','-','linewidth',2)
 xlabel('x');
