@@ -1,5 +1,5 @@
 
-close all;clear a b ab Base cl;
+clear a b ab Base cl;
 figure();
 a(2,:) = 2.7:0.001:4;
 a(1,:) = 0;
@@ -27,6 +27,4 @@ xlabel('x');
 ylabel('y');
 set(gca,'FontSize',14);  
 hd(5) = scatter(Los_result(index,1) .m(:,1),Los_result(index,1) .m(:,2),50,"ro");
-hold on;
-hd(6) = scatter(IMU_result.m(:,1),IMU_result.m(:,2),50,"b+");
 axis ([2.5 5.5 -1.5 1.5]);

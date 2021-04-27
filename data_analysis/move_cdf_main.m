@@ -231,7 +231,7 @@ end
 
 %%
 close all;
-% %方形
+%方形
 % figure
 % h(1) = cdfplot(md_fp_square_8rx); hold on;
 % set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
@@ -251,7 +251,7 @@ close all;
 % ylabel('CDF');
 % set(gca,'FontSize',14);  
 % title('sqrare only');
-% %菱形
+%菱形
 % figure
 % h(1) = cdfplot(md_fp_lingxing_8rx); hold on;
 % set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
@@ -273,48 +273,48 @@ close all;
 % set(gca,'FontSize',14);  
 % title('lingxing only');
 
-% %8字形
-% figure
-% h(1) = cdfplot(md_fp_8zixing_8rx); hold on;
-% set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
-% h(2) = cdfplot(md_mpc_8zixing_8rx);
-% set(h(2),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
-% h(3) = cdfplot(md_fp_8zixing_4rx);
-% set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
-% h(4) = cdfplot(md_mpc_8zixing_4rx);
-% set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
-% 
-% h(5) = cdfplot(md_imu_8zixing_8rx);
-% set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
-% h(6) = cdfplot(md_imu_8zixing_4rx);
-% set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
-% lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
-% set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
-% xlabel('Error [m]');
-% ylabel('CDF');
-% set(gca,'FontSize',14);  
-% title('8zixing only');
-%三角形
+% 8字形
 figure
-h(1) = cdfplot(md_fp_sanjiao_8rx); hold on;
+h(1) = cdfplot(md_fp_8zixing_8rx); hold on;
 set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
-h(2) = cdfplot(md_mpc_sanjiao_8rx);
+h(2) = cdfplot(md_mpc_8zixing_8rx);
 set(h(2),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
-h(3) = cdfplot(md_fp_sanjiao_4rx);
+h(3) = cdfplot(md_fp_8zixing_4rx);
 set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
-h(4) = cdfplot(md_mpc_sanjiao_4rx);
+h(4) = cdfplot(md_mpc_8zixing_4rx);
 set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
-h(5) = cdfplot(md_imu_sanjiao_8rx);
-set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
-h(6) = cdfplot(md_imu_sanjiao_4rx);
-set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
 
+h(5) = cdfplot(md_imu_8zixing_8rx);
+set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(6) = cdfplot(md_imu_8zixing_4rx);
+set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
 lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
 set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
 xlabel('Error [m]');
 ylabel('CDF');
 set(gca,'FontSize',14);  
-title('sanjiao only');
+title('8zixing only');
+% 三角形
+% figure
+% h(1) = cdfplot(md_fp_sanjiao_8rx); hold on;
+% set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
+% h(2) = cdfplot(md_mpc_sanjiao_8rx);
+% set(h(2),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
+% h(3) = cdfplot(md_fp_sanjiao_4rx);
+% set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
+% h(4) = cdfplot(md_mpc_sanjiao_4rx);
+% set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+% h(5) = cdfplot(md_imu_sanjiao_8rx);
+% set(h(5),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+% h(6) = cdfplot(md_imu_sanjiao_4rx);
+% set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
+% 
+% lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
+% set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
+% xlabel('Error [m]');
+% ylabel('CDF');
+% set(gca,'FontSize',14);  
+% title('sanjiao only');
 % 
 % %所有
 % md_fp_8rx = [md_fp_square_8rx md_fp_lingxing_8rx md_fp_8zixing_8rx md_fp_sanjiao_8rx];

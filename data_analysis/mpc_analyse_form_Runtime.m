@@ -9,7 +9,7 @@ run("Properties.m"); %读取校准值 cali 和pdoa的测角天线参数
 antenna_num = length(antenna_index);
 %% 提取多径相对直射径的距离
 mpc_delay = (multi_path - los_path) / 1000000000 * 300000000;
-multi_path = round(multi_path) ; %换算成整数索引，提取PDOA
+multi_path = round(multi_path)    ; %换算成整数索引，提取PDOA
 %% 提取多径的角度 
 for k = 1:8
     mpc_phase(1,k) = angle(Signal.uwbResult.cir{1,k}(multi_path,1));

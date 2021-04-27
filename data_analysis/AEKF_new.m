@@ -1,7 +1,7 @@
 clear all;clc;close all;
-load('data/20210413_indoor/move_04.mat')
+load('data/20210413_indoor/move_07_2.mat')
 
-load('data/Acc_data/shape/Tri_Acc.mat');
+load('data/Acc_data/shape/Eight_Acc.mat');
 
 global result;
 global IMU_result;
@@ -12,10 +12,10 @@ global Mpc_result;
 
 %%
 
-antenna_num = 4;
+antenna_num = 8;
 index = antenna_num - 2;
 useful_num = length(result(index,1).los_d.data);
-init_state = [4    -1        0     0    0    0      3.98         -0.015];
+init_state = [3    -1        0     0    0    0      3.95         0];
 init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001];
 
 IMU_result.m(1,:) = init_state(1,1:6);

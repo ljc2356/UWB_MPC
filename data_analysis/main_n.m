@@ -1,7 +1,7 @@
 clear all;clc;close all;
 %% 读取数据
 folder = './ml_data/20210413_indoor/';
-files_name = 'mpc_07.json';
+files_name = 'd_mpc_01.json';
 filenames{1} = [folder,files_name];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
@@ -92,34 +92,16 @@ end
 % end
 
 %% 对角度进行离线滤波
-
+std(result(index,1).los_phi.data)
+mean(result(index,1).los_phi.data)
 % EKF_angle();
-Flat_angle()
+% Flat_angle()
 
 % data_folder = './data/20210413_indoor/';
 % data_name = [data_folder,files_name(1:end - 5),'.mat'];
 % save(data_name,"result");
 
 
-
-
-
-% %% 数据进行反向处理
-% for antenna_num = 3:8
-%     index = antenna_num -2;
-%     result(index,1).los_d.data = flip(result(index,1).los_d.data );
-%     result(index,1).los_phi.data = flip(result(index,1).los_phi.data );
-%     result(index,1).mpc_d.data = flip(result(index,1).mpc_d.data );
-%     result(index,1).mpc_phi.data = flip(result(index,1).mpc_phi.data );
-% end
-% 
-% % result(6).mpc_phi.data(280:329,1) = result(6).mpc_phi.data(280:329,1) + 0.02;
-% save("result_inv.mat")
-
-
-
-
-%result(6,1).mpc_phi.data  =result(6,1).mpc_phi.data - ( mean(result(6,1).mpc_phi.data ) -  atan(6))
 % %% 绘制sco_pp图
 % close all;
 % % figure();
@@ -134,10 +116,3 @@ Flat_angle()
 % hold on;
 % title("sco pp los")
 % end
-
-%% 进行定位 
-% global loc_result;
-% [loc_result] = Loc_losmpc(0);  % （联合定位）
-% [loc_result] = Loc_los(0);     % 单独直射径定位
-% [loc_result] = Loc_mpc(0);     % 单独反射径定位
-% %% 存储数据
