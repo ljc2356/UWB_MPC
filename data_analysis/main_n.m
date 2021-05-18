@@ -1,15 +1,15 @@
 clear all;clc;close all;
 %% 读取数据
-folder = './ml_data/20210413_indoor/';
-files_name = 'd_mpc_01.json';
+folder = './ml_data/20210507_11201/';
+files_name = '11.json';
 filenames{1} = [folder,files_name];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
-cali_folder = './ml_data/20210407_indoor/';     %读取二次校准数据参数
-cali_filenames = [cali_folder, 'background_01.json'];
+cali_folder = './ml_data/20210507_11201/';     %读取二次校准数据参数
+cali_filenames = [cali_folder, 'cali_01.json'];
 
-Back_folder ='./ml_data/20210407_indoor/';   
-Back_filenames = [Back_folder, 'background_01.json'];  %读取模板生成参数
+Back_folder ='./ml_data/20210507_11201/';   
+Back_filenames = [Back_folder, 'cali_01.json'];  %读取模板生成参数
     
 global result;
 for antenna_num = 3:8 
@@ -94,6 +94,7 @@ end
 %% 对角度进行离线滤波
 std(result(index,1).los_phi.data)
 mean(result(index,1).los_phi.data)
+
 % EKF_angle();
 % Flat_angle()
 

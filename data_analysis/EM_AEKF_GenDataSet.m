@@ -9,7 +9,7 @@ After_filenames = [After_folder,filenames,'.mat'];
 
 %% 挑选有用数据
 records = loadRecordFile(Json_filenames);
-[useful_num,After_records]= UsefulSelect(records);
+[useful_num_temp,After_records]= UsefulSelect(records);
 
 load(Result_filenames)
 global result;
@@ -26,12 +26,12 @@ dis_threhold = 0.15;
 for iter = 1
     iter
     run("Copy_of_AEKF_new_noneIMU.m");
-    useful_num = length(Los_result(index,1).m(:,1));
+    useful_num = useful_num_temp;
     %% 直达径的校准
     correct_los_d = sqrt(sum(Los_result(index,1).m(:,1:2).*Los_result(index,1).m(:,1:2),2));
     correct_los_phi = atan2(Los_result(index,1).m(:,2),Los_result(index,1).m(:,1));
-    Diff(:,1) = result(index,1).los_d.data - correct_los_d;
-    Diff(:,2) = wrapToPi(result(index,1).los_phi.data - correct_los_phi);
+    Diff(:,1) = result(index,1).los_d.data(1:useful_num,1) - correct_los_d;
+    Diff(:,2) = wrapToPi(result(index,1).los_phi.data(1:useful_num,1) - correct_los_phi);
     Diff_norm = sqrt(sum(Diff(:,1:2).*Diff(:,1:2),2));
     Wrong_index = find(Diff_norm(over_max+1:end) > ob_threhold) + over_max;
     Wrong_Diff = Diff(Wrong_index,1:2);
@@ -52,4 +52,8 @@ for iter = 1
 
 end
 run("DrawOneFast.m");
+if length(After_records)>useful_num
+    After_records(useful_num+1:end,1) = [];
+end
+
 save(After_filenames,'After_records');

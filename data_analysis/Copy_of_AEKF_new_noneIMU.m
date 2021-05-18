@@ -35,8 +35,8 @@ NQ = 200;
 
 %% 开始进行LOS_EKF
 real_index = 10000000;
-useful_num = length(result(index,1).los_d.data);
-
+% useful_num = length(result(index,1).los_d.data);
+useful_num = useful_num_temp;
  for i = 2:useful_num
     %%  预测
        

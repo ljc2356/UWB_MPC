@@ -17,8 +17,8 @@ for k = 1:8
 end
 mpc_pdoa = wrapToPi(mpc_pdoa - cali);   % 减去对应的校准值
 
-% [mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , -1*pi  ,  pi  );
-[mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , -pi + 4.00  , -pi+  4.4416  );
+[mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , -1*pi  ,  pi  );
+% [mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , -pi + 4.00  , -pi+  4.4416  );
 %% 整合数据，进行二次校准，准备输出
 
 los_d = Signal.meaResult.D;

@@ -9,8 +9,8 @@ run("Properties.m"); %读取校准值 cali 和pdoa的测角天线参数
 antenna_num = length(antenna_index);
 
 %% 提取直射径的角度
-%[los_phi,~,sco_pp_los_] = AOA_ML_Mat(Signal.meaResult.pdoa(antenna_index),antenna_index, fc , c , radius, -pi , pi);
-[los_phi,~,sco_pp_los_] = AOA_ML_Mat(Signal.meaResult.pdoa(antenna_index),antenna_index, fc , c , radius,  -pi + 2.80 ,-pi + 3.50);
+[los_phi,~,sco_pp_los_] = AOA_ML_Mat(Signal.meaResult.pdoa(antenna_index),antenna_index, fc , c , radius, -pi , pi);
+% [los_phi,~,sco_pp_los_] = AOA_ML_Mat(Signal.meaResult.pdoa(antenna_index),antenna_index, fc , c , radius,  -pi + 2.80 ,-pi + 3.50);
 %% 整合数据，进行二次校准，准备输出
 
 los_d = Signal.meaResult.D;

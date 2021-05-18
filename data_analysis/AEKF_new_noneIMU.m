@@ -215,7 +215,7 @@ useful_num = length(result(index,1).los_d.data);
        end
  end
  save("Los_result.mat","Los_result");
- run("DrawTwoFast.m");
+ run("DrawOneFast.m");
 
 
 % 
