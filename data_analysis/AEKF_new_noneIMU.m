@@ -1,24 +1,23 @@
+%% LOS MPC融合 联邦卡尔曼滤波定位 核心脚本 （无惯导数据融合）
+%需要 main.m 测距测角算法脚本输出的测距测角数据
+%融合后， Los_result Mpc_result 都是同样的融合结果，保存了相同的精确位置信息，均为本脚本的
+%%  加载数据与声明数据
 clear all;clc;close all;
-load('data/20210413_indoor/move_07_2.mat')
+load('data/20210413_indoor/move_02.mat')
 
+global result;     %初始化测距测教数据结构体
+global Los_result; %初始化直达径观测 卡尔曼滤波定位结果结构体
+global Mpc_result; %初始化多径观测 卡尔曼滤波定位结果结构体
+ 
 
-global result;
-
-global Los_result;
-global Mpc_result;
-global Avg_result;
-beta = 1/2;
-
-%% 指定参数
-Delta_u = 0.01;
-
-%%
+%% 初始化卡尔曼滤波初值 与相关参数
 
 antenna_num = 8;
 index = antenna_num - 2;
-init_state = [3    -1        0     0    0    0     4         0];
-init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001];
+init_state = [3    -1        0     0    0    0     4         0];  %给一个相对精确的初值有助于融合
+init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001]; %对精确的初值信心很足 有助于融合
 
+% 初始化直达径滤波数据
 Los_result(index,1).antenna_num = antenna_num;
 Los_result(index,1).m(1,:) = init_state(1,1:4);% 指定初值
 Los_result(index,1).P{1} = diag(init_P(1:4));  %相关噪声给大一些
@@ -27,7 +26,7 @@ Los_result(index,1).R{1} = eye(2)/100;    %观测噪声任取
 Los_result(index,1).e_flat(1,:) = zeros(2,1)';
 Los_result(index,1).w_flat(1,:) = zeros(4,1)';
 Los_result(index,1).error_index(1,1) = 0;
-
+% 初始化多径滤波数据
 Mpc_result(index,1).antenna_num = antenna_num;
 Mpc_result(index,1).m(1,:) = [init_state(1,1:4),init_state(1,7:8)];% 指定初值
 Mpc_result(index,1).P{1} =  diag([init_P(1:4),init_P(7:8)]); %相关噪声给大一些
@@ -35,18 +34,16 @@ Mpc_result(index,1).Q{1} = [eye(4)/10000,zeros(4,2);zeros(2,4),zeros(2,2)];   %�
 Mpc_result(index,1).R{1} = eye(2)/100; %观测噪声任取
 Mpc_result(index,1).e_flat(1,:) = zeros(2,1)';
 Mpc_result(index,1).w_flat(1,:) = zeros(6,1)';
-
+% 给定AEKF 噪声更新参数
 NR = 100;
 NQ = 100;
 
 %% 开始进行LOS_EKF
-real_index = 10000000;
 useful_num = length(result(index,1).los_d.data);
-
  for i = 2:useful_num
-    %%  预测
-       
-       Delta_time = result(index,1).Delta_time(i,1);
+    %% 各个子滤波器滤波
+    
+       %首达径观测滤波
        Delta_time = 0.079;
        A = [1 0 Delta_time 0;
             0 1 0 Delta_time;
@@ -59,9 +56,9 @@ useful_num = length(result(index,1).los_d.data);
        Observation =   [result(index,1).los_d.data(i,1);
                          result(index,1).los_phi.data(i,1)];
        
-           Los_result(index,1) = AEKF_X(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ,10);
-%         Los_result(index,1) = AEKF(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ);
-%         Los_result(index,1).error_index(i,1) = 0;
+       Los_result(index,1) = AEKF_X(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ,10);
+
+        %多径观测滤波   
         A_expend = [1 0 Delta_time 0       0  0 ;
                    0 1     0  Delta_time  0  0 ;
                    0 0     1      0       0  0 ;
@@ -76,7 +73,7 @@ useful_num = length(result(index,1).los_d.data);
                         result(index,1).mpc_phi.data(i,1)];
        Mpc_result(index,1) = AEKF(Mpc_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ);
 
-       %% 运动状态协方差应该公用
+      %% 联邦滤波融合
        if ( 1 )   %是否耦合
    
                 
@@ -101,31 +98,28 @@ useful_num = length(result(index,1).los_d.data);
 
            Los_result(index,1).P{i}(1:4,1:4) = P_coef(1) * Pg;
            Mpc_result(index,1).P{i}(1:4,1:4) = P_coef(2) * Pg;
-           
-           
-           
+             
            %% 不根据各个子滤波器的结果进行运动噪声矩阵的更新 而是根据融合的结果进行更新
            if (norm(temp_los - Xg_hat(1:4,1))<=0.1) % 仅在直达径比较好的时候进行融合
-           
-           a1 = (NQ -1)/NQ;
-           m_minus = A * Los_result(index,1).m(i-1,1:4)';
-           P_minus = A * Los_result(index,1).P{i-1}(1:4,1:4) * A' + Los_result(index,1).Q{i-1}(1:4,1:4); % 这里的 Q{i-1} 矩阵是融合的结果
-           
-           wk_hat = Xg_hat - m_minus;
-           wk_flat = a1 * Los_result(index,1).w_flat(i-1,:)' + 1/NQ * wk_hat; % 这里的 Los.w_flat(i-1,:) 也是已经融合过的结果
-           Delta_Qk = 1/(NQ-1) * (wk_hat - wk_flat)*(wk_hat - wk_flat)' + 1/NQ * ( P_minus - A * Los_result(index,1).P{i-1}(1:4,1:4) * A');
-           Qk = abs(diag(diag(a1 * Los_result(index,1).Q{i-1}(1:4,1:4) + Delta_Qk)));
-           Los_result(index,1).w_flat(i,1:4) = wk_flat';
-           Los_result(index,1).Q{i}(1:4,1:4) = Qk;
-           Mpc_result(index,1).w_flat(i,1:4) = wk_flat';
-           Mpc_result(index,1).Q{i}(1:4,1:4) = Qk;       
+               a1 = (NQ -1)/NQ;
+               m_minus = A * Los_result(index,1).m(i-1,1:4)';
+               P_minus = A * Los_result(index,1).P{i-1}(1:4,1:4) * A' + Los_result(index,1).Q{i-1}(1:4,1:4); % 这里的 Q{i-1} 矩阵是融合的结果
+
+               wk_hat = Xg_hat - m_minus;
+               wk_flat = a1 * Los_result(index,1).w_flat(i-1,:)' + 1/NQ * wk_hat; % 这里的 Los.w_flat(i-1,:) 也是已经融合过的结果
+               Delta_Qk = 1/(NQ-1) * (wk_hat - wk_flat)*(wk_hat - wk_flat)' + 1/NQ * ( P_minus - A * Los_result(index,1).P{i-1}(1:4,1:4) * A');
+               Qk = abs(diag(diag(a1 * Los_result(index,1).Q{i-1}(1:4,1:4) + Delta_Qk)));
+               Los_result(index,1).w_flat(i,1:4) = wk_flat';
+               Los_result(index,1).Q{i}(1:4,1:4) = Qk;
+               Mpc_result(index,1).w_flat(i,1:4) = wk_flat';
+               Mpc_result(index,1).Q{i}(1:4,1:4) = Qk;       
            end
            
        end
  end
  save("Mpc_result.mat","Mpc_result");
 
-%% 开始不融合
+%% 重新计算一次不融合的结果 进行对比
 
  for i = 2:useful_num
     %%  预测
@@ -211,17 +205,11 @@ useful_num = length(result(index,1).los_d.data);
            Avg_result.m(i,:) = Xg_hat';
            Avg_result.P{i} = Pg;
     end
-
        end
  end
  save("Los_result.mat","Los_result");
- run("DrawOneFast.m");
-
-
-% 
-% 
-% 
-% 
+ %% 画出对比图
+ run("DrawTwoFast.m");   
 
 
 

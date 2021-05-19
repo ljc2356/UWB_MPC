@@ -1,0 +1,1 @@
+java -jar uwb-host.jar --local -c config/config.ch2.128.properties serial manager -d data/debug.json -f json -o

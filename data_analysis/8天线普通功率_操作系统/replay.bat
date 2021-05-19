@@ -1,0 +1,1 @@
+java -jar uwb-host.jar -c config/config.properties manager -d data/debugr.json -f json -o replay -C config/replay.properties -i data/debug.json -f json -o tmp.txt

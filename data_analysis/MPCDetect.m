@@ -1,29 +1,24 @@
 function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template)
-% Signal 每一条输入的数据
+%% 多径探测算法
+% 输入
+% Signal 每一条输入的数据 Records中的具体条目中的cir波形 即当前时刻的cir
 % Template 8天线的降噪模板
 % Conv_Template 8天线的匹配模板
+% 输出
+% mpc_index 多径索引列表
+%%
+%模板降噪 与 匹配滤波
     run("Properties.m");
     Signal_length = length(Signal_Cir{1,1});
-      for kk = 1:8
-%      for kk = 7
-        This_Sig_tem = abs(Signal_Cir{1,kk}')/max(abs(Signal_Cir{1,kk}(8,1))); %这里就是针对第八位置做归一化
-
-%       This_Sig = interp1(1:Signal_length,This_Sig_tem(1:Signal_length),1:1/intersize:(Signal_length),'pchip');
-        This_Sig = sinc_interp(This_Sig_tem(1:Signal_length)', intersize, 0)';
-        Filter_Sig(kk,:) = (This_Sig - Template(kk,:));
-        Conv_Sig_temp(kk,:) = conv(Filter_Sig(kk,:),Conv_Template(kk,:));
-
+    for kk = 1:8
+        This_Sig_tem = abs(Signal_Cir{1,kk}')/max(abs(Signal_Cir{1,kk}(8,1))); %这里就是针对第八位置 即首达径波形幅度 做归一化
+        This_Sig = sinc_interp(This_Sig_tem(1:Signal_length)', intersize, 0)'; %插值
+        Filter_Sig(kk,:) = (This_Sig - Template(kk,:));                        %减去模板进行降噪
+        Conv_Sig_temp(kk,:) = conv(Filter_Sig(kk,:),Conv_Template(kk,:));      %匹配滤波
     end
-%     figure()
-%     plot(Filter_Sig(kk,:) )
-%         figure()
-%     plot(Template(kk,:) )
-%             figure()
-%     plot(This_Sig)
-%     Back = Template(kk,:);
-%     Filter =  Filter_Sig(kk,:);
-
-    mean_Conv_sig(1,:) = mean(Conv_Sig_temp,1);
+    
+% 根据匹配滤波结果寻找多径
+    mean_Conv_sig(1,:) = mean(Conv_Sig_temp,1);              
     mean_Conv_sig(2,:) = 1:1/intersize:(Signal_length+window_width-1);
     [~,locs] = findpeaks(mean_Conv_sig(1,:),'MinPeakProminence',MinPeakProminence); 
     values = mean_Conv_sig(1,locs); % 峰值的大小

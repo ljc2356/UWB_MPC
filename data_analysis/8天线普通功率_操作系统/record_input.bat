@@ -1,0 +1,1 @@
+java -jar uwb-host.jar --local -c config/config.properties serial manager -d data/%1.json -f json -o --display_quality 100

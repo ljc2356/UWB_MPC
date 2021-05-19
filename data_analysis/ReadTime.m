@@ -1,7 +1,10 @@
 function [] = ReadTime(After_records,index,i)
+%% 读取本次观测与上一时刻观测时间差
+% After_records 过滤后的records 存储基本测距、PDOA、波形信息
+% index         index = （N(天线数目） - 2）对N天线测距测角结果Result进行操作
+% i             当前时刻索引
+%%
     global result;
-%     this_time = str2double(After_records(i,1).time(end-2:end));   %随后应当使用时间戳来
-%     last_time
     if i > 1
         this_time_str = After_records(i,1).uwbResult.rxts(1);
         last_time_str = After_records(i-1 ,1).uwbResult.rxts(1);

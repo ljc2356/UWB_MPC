@@ -1,0 +1,1 @@
+java -jar uwb-host.jar --local -c config/config.properties serial manager --display_quality 100
