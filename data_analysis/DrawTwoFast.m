@@ -1,4 +1,4 @@
-%% 生成Los定位与 多径辅助定位对比图脚本
+%% Generate LOS positioning and multipath auxiliary positioning comparison diagram
 load('Mpc_result.mat')
 load('Los_result.mat')
 

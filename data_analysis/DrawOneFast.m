@@ -1,9 +1,9 @@
-%% 生成Los_result 定位结果图脚本
+%% Generate the LOS_RESULT positioning result graph 
 
 close all;
 figure();
-load('Mpc_result.mat')
-load('Los_result.mat')
+% load('Mpc_result.mat')
+% load('Los_result.mat')
 xlabel('x');
 ylabel('y');
 set(gca,'FontSize',14);  

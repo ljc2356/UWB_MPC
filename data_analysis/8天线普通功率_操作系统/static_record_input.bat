@@ -1,1 +1,0 @@
-java -jar uwb-host.jar --local -c config/config.properties serial manager -d data/%1.json -f json -o --calmode 500 --display_quality 50
