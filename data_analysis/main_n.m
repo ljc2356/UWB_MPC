@@ -1,15 +1,15 @@
 clear all;clc;close all;
 %% 读取数据
-folder = './ml_data/20210507_11201/';
-files_name = '11.json';
+folder = './ml_data/20210603/';
+files_name = 'move_03.json';
 filenames{1} = [folder,files_name];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
-cali_folder = './ml_data/20210507_11201/';     %读取二次校准数据参数
-cali_filenames = [cali_folder, 'cali_01.json'];
+cali_folder = './ml_data/20210603/';     %读取二次校准数据参数
+cali_filenames = [cali_folder, 'back.json'];
 
-Back_folder ='./ml_data/20210507_11201/';   
-Back_filenames = [Back_folder, 'cali_01.json'];  %读取模板生成参数
+Back_folder ='./ml_data/20210603/';   
+Back_filenames = [Back_folder, 'back.json'];  %读取模板生成参数
     
 global result;
 for antenna_num = 3:8 
@@ -26,34 +26,53 @@ run("Properties.m");
 [ Template, Conv_Template ] = GenerateTemplate(Back_filenames);
 %% 定位多径位置
 close all
-for i = 7
-    figure();
-    hd = plot(abs(After_records(2,1).uwbResult.cir{1,i}));
+figure();
+hold on;
+for i = 1:8
+    hd = plot(abs(After_records(300,1).uwbResult.cir{1,i}));
 end
-Ori_CIR = abs(After_records(2).uwbResult.cir{1,7});
-% set(hd,'color','b','linewidth',2);
+Ori_CIR = abs(After_records(299,1).uwbResult.cir{1,1});
+hd = plot(Ori_CIR);
+set(hd,'color','b','linewidth',2);
+xlabel('Time [ns]');
+ylabel('Amplitude');
+grid on;
+set(gca,'FontSize',14);
+legend("Original CIR Waveform");
+% 
+% CIR = zeros(1,50);
+% for i = 1:8
+%     CIR = CIR + (abs(After_records(300,1).uwbResult.cir{1,i}));
+% end
+% CIRhd = plot(CIR);
+% set(CIRhd,'color','b','linewidth',2);
 % xlabel('Time [ns]');
 % ylabel('Amplitude');
 % grid on;
 % set(gca,'FontSize',14);
 % legend("Original CIR Waveform");
 
-mpc_index = [];
 
-
- for i = 1:useful_num
-    mpc_index_tem = MPCDetect(After_records(i,1).uwbResult.cir,Template,Conv_Template);
+mpc_index = zeros(useful_num,1);
+start_index = 1;
+ for i = start_index:useful_num
+    mpc_index_tem = MPCDetect(After_records(i,1).uwbResult.cir,Template,Conv_Template,1);
     if (isempty(mpc_index_tem) == 0)
         mpc_index(i,1:length(mpc_index_tem)) = mpc_index_tem;  % 获得多径的位置
     end
     
   %加上一个变化速度判断
-    if i >=2 
-        if abs( mpc_index(i,1) - mpc_index(i-1,1)) > 3  % 如果变化太大 则视为无效 采用上一组数据的多径寻找结果
-            mpc_index(i,1) = mpc_index(i-1,1);
-        end
-    end
+%     if i >=start_index + 1
+%         if abs( mpc_index(i,1) - mpc_index(i-1,1)) > 10  % 如果变化太大 则视为无效 采用上一组数据的多径寻找结果
+%             mpc_index(i,1) = mpc_index(i-1,1);
+%         end
+%     end
+    
+%     [~,I] = min(abs(mpc_index(i,:) - 37));
+%     mpc_index(i,:) = mpc_index(i,I);
  end
+%  mpc_index = mpc_index(:,1);
+ 
 
 data_index = 1:useful_num;
 % data_index = 1:100;
@@ -69,6 +88,7 @@ for i = data_index
          [D_Phi,~ ] = los_analyse_form_Runtime(After_records(i,1),los_path,antenna_index,sec_cali);  %分析此数据的直达径
          result(index,1).los_d.data(i,1) = D_Phi(1);
          result(index,1).los_phi.data(i,1) = D_Phi(2);
+         result(index,1).los_pdoa.data(i,:) = After_records(i,1).meaResult.pdoa;
          
          if (mpc_index(i,1) == 0) % 如果没有多径，则在多径的数据栏上增加标识: 多径的距离是 0 通过检测多径距离即可判断是否存在多径
              result(index,1).mpc_d.data(i,1) = 0;
@@ -76,14 +96,18 @@ for i = data_index
          else
              temp_mpc_index = mpc_index(i,find(mpc_index(i,:)));
              for mpc_th = 1:length(temp_mpc_index)  % 如果是空的，则不会填写
-                 [D_Phi,sco_pp_mpc{antenna_num}(i,:)] = mpc_analyse_form_Runtime(After_records(i,1),mpc_index(i,mpc_th),los_path,antenna_index,sec_cali);
+                 [D_Phi,sco_pp_mpc{antenna_num}(i,:),mpc_pdoa] = mpc_analyse_form_Runtime(After_records(i,1),mpc_index(i,mpc_th),los_path,antenna_index,sec_cali);
 %                  [D_Phi,~] = mpc_analyse_form_Runtime(After_records(i,1),temp_mpc_index(mpc_th),los_path,antenna_index,sec_cali);
                  result(index,1).mpc_d.data(i,mpc_th) = D_Phi(1);
                  result(index,1).mpc_phi.data(i,mpc_th) = D_Phi(2);
+                 result(index,1).mpc_pdoa.data(i,:) = mpc_pdoa;
              end
          end
     end
 end
+
+
+
 % figure(1);
 % for antenna_num = 3:8
 %     
@@ -92,15 +116,15 @@ end
 % end
 
 %% 对角度进行离线滤波
-std(result(index,1).los_phi.data)
-mean(result(index,1).los_phi.data)
+% std(result(index,1).los_phi.data)
+% mean(result(index,1).los_phi.data)
 
 % EKF_angle();
 % Flat_angle()
 
-% data_folder = './data/20210413_indoor/';
-% data_name = [data_folder,files_name(1:end - 5),'.mat'];
-% save(data_name,"result");
+data_folder = './data/20210616_outdoor/';
+data_name = [data_folder,files_name(1:end - 5),'.mat'];
+save(data_name,"result");
 
 
 % %% 绘制sco_pp图

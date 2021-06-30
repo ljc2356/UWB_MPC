@@ -5,7 +5,7 @@ function [useful_num,After_records]= UsefulSelect(records)
     file_num = length(records);
     useful_num = 0;
     
-    for i = 50:file_num 
+    for i = 1:file_num 
         flag = 0;
             for k = 1:8
                 RX = abs(records(i).uwbResult.cir{1,k});

@@ -1,7 +1,8 @@
-function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template)
+function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template,is_max)
 % Signal 每一条输入的数据
 % Template 8天线的降噪模板
 % Conv_Template 8天线的匹配模板
+% is_max 是否只输出检测得到的最大的峰值
     run("Properties.m");
     Signal_length = length(Signal_Cir{1,1});
       for kk = 1:8
@@ -30,14 +31,19 @@ function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template)
     locs_mat = mean_Conv_sig(2,locs);  % 峰值的位置
     locs_real = (locs_mat -6);  % 根据实际峰值校准得到，与模板的宽度和中心有关  并取整   
 
-    real_index1 = find( (locs_mat > (18 + 6)));
-    real_index2 = find( locs_mat < (50+6));
+    real_index1 = find( (locs_mat > (left_index + 6)));
+    real_index2 = find( locs_mat < (right_index+6));
     real_index = intersect(real_index1,real_index2);
     if (isempty(real_index) == 0)
-    max_index = find(values == max(values(real_index)));
-    this_locs = locs_mat(max_index) - 7;
-        %mpc_index(1:length(locs)) = locs;
-    mpc_index(1,:) = (this_locs);   
+        if(is_max == 1)
+            max_index = find(values == max(values(real_index)));
+        else
+            max_index = real_index;
+        end
+    
+        this_locs = locs_mat(max_index) - 7;
+            %mpc_index(1:length(locs)) = locs;
+        mpc_index(1,:) = (this_locs);   
 
     else
         mpc_index(1) = 0;

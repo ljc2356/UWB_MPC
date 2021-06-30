@@ -1,6 +1,6 @@
-clear all;clc;close all;
-h = 4;
-x = 5;
+% clear all;clc;close all;
+h = 5;
+x = 4;
 y = -1;
 d_los = norm([x,y]);
 d_mpc = norm([x, h + h - y]);

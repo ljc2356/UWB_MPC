@@ -1,5 +1,6 @@
 clear all;clc;close all;
-load('data/20210413_indoor/move_07_2.mat')
+load('data/20210616_indoor/move_04.mat')
+
 
 
 global result;
@@ -16,8 +17,8 @@ Delta_u = 0.01;
 
 antenna_num = 8;
 index = antenna_num - 2;
-init_state = [3    -1        0     0    0    0     4         0];
-init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001];
+init_state = [8.1    -0.9        0     0    0    0     4.6         0];
+init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001] ;
 
 Los_result(index,1).antenna_num = antenna_num;
 Los_result(index,1).m(1,:) = init_state(1,1:4);% 指定初值
@@ -36,8 +37,8 @@ Mpc_result(index,1).R{1} = eye(2)/100; %观测噪声任取
 Mpc_result(index,1).e_flat(1,:) = zeros(2,1)';
 Mpc_result(index,1).w_flat(1,:) = zeros(6,1)';
 
-NR = 100;
-NQ = 100;
+NR = 200;
+NQ = 200;
 
 %% 开始进行LOS_EKF
 real_index = 10000000;
@@ -58,10 +59,11 @@ useful_num = length(result(index,1).los_d.data);
        Obser_model.JHx = @Hx_J_los;
        Observation =   [result(index,1).los_d.data(i,1);
                          result(index,1).los_phi.data(i,1)];
-       
-           Los_result(index,1) = AEKF_X(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ,10);
-%         Los_result(index,1) = AEKF(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ);
+      
+         Los_result(index,1) = AEKF(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ);
 %         Los_result(index,1).error_index(i,1) = 0;
+
+    if (result(index,1).mpc_d.data(i,1) ~=  0)
         A_expend = [1 0 Delta_time 0       0  0 ;
                    0 1     0  Delta_time  0  0 ;
                    0 0     1      0       0  0 ;
@@ -101,12 +103,10 @@ useful_num = length(result(index,1).los_d.data);
 
            Los_result(index,1).P{i}(1:4,1:4) = P_coef(1) * Pg;
            Mpc_result(index,1).P{i}(1:4,1:4) = P_coef(2) * Pg;
-           
-           
-           
+          
            %% 不根据各个子滤波器的结果进行运动噪声矩阵的更新 而是根据融合的结果进行更新
-           if (norm(temp_los - Xg_hat(1:4,1))<=0.1) % 仅在直达径比较好的时候进行融合
-           
+%            if (norm(temp_los - Xg_hat(1:4,1))<=0.1) % 仅在直达径比较好的时候进行融合
+           if(1)
            a1 = (NQ -1)/NQ;
            m_minus = A * Los_result(index,1).m(i-1,1:4)';
            P_minus = A * Los_result(index,1).P{i-1}(1:4,1:4) * A' + Los_result(index,1).Q{i-1}(1:4,1:4); % 这里的 Q{i-1} 矩阵是融合的结果
@@ -122,6 +122,21 @@ useful_num = length(result(index,1).los_d.data);
            end
            
        end
+    else
+        Mpc_result(index,1).m(i,:) = Mpc_result(index,1).m(i-1,:);
+        Mpc_result(index,1).P{i} = Mpc_result(index,1).P{i-1};
+        Mpc_result(index,1).Q{i} = Mpc_result(index,1).Q{i-1};
+        Mpc_result(index,1).R{i} = Mpc_result(index,1).R{i-1};
+        Mpc_result(index,1).e_flat(i,:) = Mpc_result(index,1).e_flat(i-1,:);
+        Mpc_result(index,1).w_flat(i,:) = Mpc_result(index,1).w_flat(i-1,:);
+        
+        Mpc_result(index,1).m(i,1:4) = Los_result(index,1).m(i,1:4);
+        Mpc_result(index,1).P{i}(1:4,1:4) = Los_result(index,1).P{i}(1:4,1:4);
+        
+        Mpc_result(index,1).Q{i}(1:4,1:4) = Los_result(index,1).Q{i}(1:4,1:4);
+        Mpc_result(index,1).R{i} = Los_result(index,1).R{i};
+        Mpc_result(index,1).w_flat(i,1:4) = Los_result(index,1).w_flat(i,1:4);
+    end
  end
  save("Mpc_result.mat","Mpc_result");
 
@@ -142,80 +157,11 @@ useful_num = length(result(index,1).los_d.data);
        Obser_model.JHx = @Hx_J_los;
        Observation =   [result(index,1).los_d.data(i,1);
                          result(index,1).los_phi.data(i,1)];
-       
-%           Los_result(index,1) = AEKF_X(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ,10);
         Los_result(index,1) = AEKF(Los_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ);
-        Los_result(index,1).error_index(i,1) = 0;
-        A_expend = [1 0 Delta_time 0       0  0 ;
-                   0 1     0  Delta_time  0  0 ;
-                   0 0     1      0       0  0 ;
-                   0 0     0      1       0  0 ;
-                   0 0     0      0       1  0 ;
-                   0 0     0      0       0  1 ];
-       Motion_model.fx = @(m,contrl) A_expend*m;
-       Motion_model.JFx = @(m,contrl) A_expend;
-       Obser_model.hx = @h_mirror;
-       Obser_model.JHx = @Hx_J_mirror;
-       Observation =   [result(index,1).mpc_d.data(i,1);
-                        result(index,1).mpc_phi.data(i,1)];
-       Mpc_result(index,1) = AEKF(Mpc_result(index,1) , i , Observation, Delta_time, Motion_model, Obser_model,[2], NR,NQ);
-
-       %% 运动状态协方差应该公用
-       if ( 0 )   %是否耦合
-   
-       
-       %% 进行融合
-    if (Los_result(index,1).error_index(i,1) == 1)
-
-           P_MPC = Mpc_result(index,1).P{i}(1:4,1:4);
-
-           Pg = (  P_MPC^(-1))^(-1);
-           X3 = (P_MPC^(-1)) * Mpc_result(index,1).m(i,1:4)';
-           Xg_hat = Pg * (X3);
-
-           Los_result(index,1).m(i,1:4) = Xg_hat';
-           Mpc_result(index,1).m(i,1:4) = Xg_hat';
-
-
-           Mpc_result(index,1).P{i}(1:4,1:4)  = 1* Pg;
-%            Los_result(index,1).P{i}(1:4,1:4) = 2*Pg;
-%            
-           
-           Avg_result.m(i,:) = Xg_hat';
-           Avg_result.P{i} = Pg;
-           
-    else
-                  Mpc_result(index,1).Q{i}(1:4,1:4) = Los_result(index,1).Q{i}(1:4,1:4) ;
-           
-           coef(1) = 1;
-           coef(2) = 1.3;
-           P_LOS = Los_result(index,1).P{i}(1:4,1:4) * coef(1);
-           P_MPC = Mpc_result(index,1).P{i}(1:4,1:4) * coef(2);
-
-           Pg = ( P_LOS^(-1) +  P_MPC^(-1))^(-1);
-           X2 = (P_LOS^(-1)) * Los_result(index,1).m(i,1:4)';
-           X3 = (P_MPC^(-1)) * Mpc_result(index,1).m(i,1:4)';
-           Xg_hat = Pg * (X2 + X3);
-           
-           Los_result(index,1).m(i,1:4) = Xg_hat';
-           Mpc_result(index,1).m(i,1:4) = Xg_hat';
-           
-           coef_sum = 1/coef(1) + 1/coef(2);
-           P_coef(1) = coef(1) * coef_sum;
-           P_coef(2) = coef(2) * coef_sum;
-           
-
-           Los_result(index,1).P{i}(1:4,1:4) = P_coef(1) * Pg;
-           Mpc_result(index,1).P{i}(1:4,1:4)  = P_coef(2) *  Pg;
-
-           Avg_result.m(i,:) = Xg_hat';
-           Avg_result.P{i} = Pg;
-    end
-
-       end
+        Los_result(index,1).error_index(i,1) = 0; 
  end
  save("Los_result.mat","Los_result");
- run("DrawOneFast.m");
+ run("DrawTwoFast.m");
 
 
 % 

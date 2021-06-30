@@ -14,14 +14,8 @@ for i = 1:antenna_num
     alpha(i) = wrapToPi((k-1)*pi/4);
 end
 
-theta_est = 0;
-sco_ppmin = 100000;
-
-kk = 1;
-% for theta = - pi : 0.01 : pi
-theta = low_threshold : 0.01 : high_threshold;
-% theta = - pi : 0.01 : pi;
-std_phi = 2 * pi * fc / c * radius * cos(theta);
+theta = low_threshold : 0.001 : high_threshold;
+std_phi = 2 * pi * fc / c * radius * cos(theta);   % 全都是相对于 1号天线的pdoa
 for i = 1:antenna_num
     phi(i,:) =    2 * pi * fc / c * radius * cos(theta - alpha(i));
     predict_pdoa(i,:) = wrapToPi( phi(i,:) - std_phi );
