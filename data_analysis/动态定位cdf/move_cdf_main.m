@@ -321,15 +321,26 @@ md_fp_8rx = [md_fp_square_8rx md_fp_lingxing_8rx md_fp_8zixing_8rx md_fp_sanjiao
 md_mpc_8rx = [md_mpc_square_8rx md_mpc_lingxing_8rx md_mpc_8zixing_8rx md_mpc_sanjiao_8rx];
 md_fp_4rx = [md_fp_square_4rx md_fp_lingxing_4rx md_fp_8zixing_4rx md_fp_sanjiao_4rx];
 md_mpc_4rx = [md_mpc_square_4rx md_mpc_lingxing_4rx md_mpc_8zixing_4rx md_mpc_sanjiao_4rx];
+md_imu_8rx = [md_imu_square_8rx md_imu_lingxing_8rx md_imu_8zixing_8rx md_imu_sanjiao_8rx];
+md_imu_4rx = [md_imu_square_4rx md_imu_lingxing_4rx md_imu_8zixing_4rx md_imu_sanjiao_4rx];
+
 figure
 h(1) = cdfplot(md_fp_8rx); hold on;
 set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
 h(2) = cdfplot(md_mpc_8rx);
 set(h(2),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
-h(3) = cdfplot(md_fp_4rx);
-set(h(3),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
-h(4) = cdfplot(md_mpc_4rx);
-set(h(4),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+h(3) = cdfplot(md_imu_8rx);
+set(h(3),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+
+h(4) = cdfplot(md_fp_4rx);
+set(h(4),'Color','r','linestyle','--','Marker','none','Linewidth',2); hold on;
+h(5) = cdfplot(md_mpc_4rx);
+set(h(5),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+h(6) = cdfplot(md_imu_4rx);
+set(h(6),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
+
+axis([0 0.6 0 1])
+
 lgd1 = legend(h([3 4 1 2]),'fp 4','mpc 4','fp 8','mpc 8');
 set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
 xlabel('Error [m]');
@@ -337,4 +348,62 @@ ylabel('CDF');
 set(gca,'FontSize',14);  
 title('all');
 
+%% 开题绘图 强多径绘图
+figure(6)
+h(1) = cdfplot(md_fp_8rx); hold on;
+set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(2) = cdfplot(md_mpc_8rx);
+set(h(2),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(3) = cdfplot(md_imu_8rx);
+set(h(3),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
 
+axis([0 0.6 0 1])
+lgd1 = legend('FirstPath','Federated Filter','GraphSLAM');
+
+set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
+xlabel('Error [m]');
+ylabel('CDF');
+set(gca,'FontSize',14);  
+title(' ');
+
+%% 弱多径绘图
+figure(7)
+
+h(1) = cdfplot(md_fp_8zixing_4rx);
+set(h(1),'Color','r','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(2) = cdfplot(md_mpc_8zixing_4rx);
+set(h(2),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(3) = cdfplot(md_imu_8zixing_4rx);
+set(h(3),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+
+lgd1 = legend('FirstPath','Federated Filter','GraphSLAM');
+set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
+xlabel('Error [m]');
+ylabel('CDF');
+set(gca,'FontSize',14);  
+title(' ');
+
+%% 建图情况绘图
+
+
+figure(8)
+h(3) = cdfplot(md_imu_square_8rx);
+set(h(3),'Color','g','linestyle','-','Marker','none','Linewidth',2); hold on;
+h(4) = cdfplot(md_imu_square_4rx);
+set(h(4),'Color','b','linestyle','-','Marker','none','Linewidth',2); hold on;
+
+h(1) = cdfplot(md_fp_8zixing_8rx); hold on;
+set(h(1),'Color','g','linestyle','--','Marker','none','Linewidth',2); hold on;
+
+h(2) = cdfplot(md_fp_8zixing_4rx);
+set(h(2),'Color','b','linestyle','--','Marker','none','Linewidth',2); hold on;
+
+
+lgd1 = legend('Strong MPC,GraphSLAM','Strong MPC,Federated Filter','Weak MPC,GraphSLAM','Weak MPC,Federated Filter');
+set(lgd1,'color','w','FontName','Times New Roman', 'FontSize',14);
+xlabel('Error [m]');
+ylabel('CDF');
+set(gca,'FontSize',14);  
+title(' ');
+
+%%

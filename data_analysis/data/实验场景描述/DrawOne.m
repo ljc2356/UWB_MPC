@@ -2,7 +2,7 @@
 
 close all;clear all;
 
-Datafolder = '../八天线定位结果/move_06_2 菱形/';
+Datafolder = '../八天线定位结果/move_02 正方形/';
 load([Datafolder,'IMU_result.mat']);
 load([Datafolder,'Los_result.mat']);
 load([Datafolder,'Mpc_result.mat']);
@@ -13,10 +13,10 @@ for i = 1:useful_num     % 旋转并记录每个画面
     
    hd(1) = scatter(Los_result(2,1).m(i,1),Los_result(2,1).m(i,2),50,"ro");           % 以绘画函数来产生动画
    hold on;
-   hd(2) = scatter(Mpc_result(index,1).m(i,1),Mpc_result(index,1).m(i,2),50,"g*");           % 以绘画函数来产生动画
+   hd(2) = scatter(Mpc_result(index,1).m(i,1),Mpc_result(index,1).m(i,2),50,"b*");           % 以绘画函数来产生动画
    hold on;
-   hd(3) = scatter(IMU_result.m(i,1),IMU_result.m(i,2),50,"bx");           % 以绘画函数来产生动画
-   hold on;
+%    hd(3) = scatter(IMU_result.m(i,1),IMU_result.m(i,2),50,"bx");           % 以绘画函数来产生动画
+%    hold on;
 
    axis ([2.5 5.5 -1.5 1.5]);
    
@@ -28,7 +28,7 @@ for i = 1:useful_num     % 旋转并记录每个画面
     if k==1
         xlabel('x');
         ylabel('y');
-        lgd = legend({"LOS Localization", "LOS\\MPC Localization","LOS\\MPC\\IMU Localization"},'Location','northeast','FontSize',12);
+        lgd = legend({"LOS Localization", "LOS\\MPC Localization"},'Location','northeast','FontSize',12);
         lgd.AutoUpdate = 'off'
         lgd.Box = 'off'
         set(gca,'FontSize',16);  

@@ -1,7 +1,7 @@
 clear all;clc;close all;
 %% 读取数据
-folder = './ml_data/20210603/';
-files_name = 'move_03.json';
+folder = './ml_data/20210628_indoor_5/';
+files_name = '4-7.json';
 filenames{1} = [folder,files_name];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
@@ -25,20 +25,20 @@ run("Properties.m");
 %% 生成模板
 [ Template, Conv_Template ] = GenerateTemplate(Back_filenames);
 %% 定位多径位置
-close all
-figure();
-hold on;
-for i = 1:8
-    hd = plot(abs(After_records(300,1).uwbResult.cir{1,i}));
-end
-Ori_CIR = abs(After_records(299,1).uwbResult.cir{1,1});
-hd = plot(Ori_CIR);
-set(hd,'color','b','linewidth',2);
-xlabel('Time [ns]');
-ylabel('Amplitude');
-grid on;
-set(gca,'FontSize',14);
-legend("Original CIR Waveform");
+% close all
+% figure();
+% hold on;
+% for i = 1:8
+%     hd = plot(abs(After_records(300,1).uwbResult.cir{1,i}));
+% end
+% Ori_CIR = abs(After_records(299,1).uwbResult.cir{1,1});
+% hd = plot(Ori_CIR);
+% set(hd,'color','b','linewidth',2);
+% xlabel('Time [ns]');
+% ylabel('Amplitude');
+% grid on;
+% set(gca,'FontSize',14);
+% legend("Original CIR Waveform");
 % 
 % CIR = zeros(1,50);
 % for i = 1:8
@@ -122,9 +122,9 @@ end
 % EKF_angle();
 % Flat_angle()
 
-data_folder = './data/20210616_outdoor/';
-data_name = [data_folder,files_name(1:end - 5),'.mat'];
-save(data_name,"result");
+% data_folder = './data/20210616_outdoor/';
+% data_name = [data_folder,files_name(1:end - 5),'.mat'];
+% save(data_name,"result");
 
 
 % %% 绘制sco_pp图

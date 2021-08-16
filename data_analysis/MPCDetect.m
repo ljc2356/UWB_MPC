@@ -12,6 +12,8 @@ function [mpc_index] = MPCDetect(Signal_Cir,Template,Conv_Template,is_max)
 %       This_Sig = interp1(1:Signal_length,This_Sig_tem(1:Signal_length),1:1/intersize:(Signal_length),'pchip');
         This_Sig = sinc_interp(This_Sig_tem(1:Signal_length)', intersize, 0)';
         Filter_Sig(kk,:) = (This_Sig - Template(kk,:));
+        
+        
         Conv_Sig_temp(kk,:) = conv(Filter_Sig(kk,:),Conv_Template(kk,:));
 
     end

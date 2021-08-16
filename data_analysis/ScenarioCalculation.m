@@ -1,7 +1,7 @@
 % clear all;clc;close all;
 h = 5;
-x = 4;
-y = -1;
+x = 6.75;
+y = 0;
 d_los = norm([x,y]);
 d_mpc = norm([x, h + h - y]);
 diff_d_mpc = d_mpc - d_los;

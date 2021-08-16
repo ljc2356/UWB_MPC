@@ -1,7 +1,5 @@
 clear all;clc;close all;
-load('data/20210616_indoor/move_04.mat')
-
-
+load('data/20210413_indoor/move_02.mat')
 
 global result;
 
@@ -17,7 +15,7 @@ Delta_u = 0.01;
 
 antenna_num = 8;
 index = antenna_num - 2;
-init_state = [8.1    -0.9        0     0    0    0     4.6         0];
+init_state = [3    -1        0     0    0    0     4         0];
 init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001] ;
 
 Los_result(index,1).antenna_num = antenna_num;

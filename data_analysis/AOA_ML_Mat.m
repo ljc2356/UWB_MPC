@@ -20,7 +20,7 @@ for i = 1:antenna_num
     phi(i,:) =    2 * pi * fc / c * radius * cos(theta - alpha(i));
     predict_pdoa(i,:) = wrapToPi( phi(i,:) - std_phi );
 end
-pdoa_diff = predict_pdoa - pdoa_ob';
+pdoa_diff = wrapToPi(predict_pdoa - pdoa_ob');
 pdoa_square = pdoa_diff.* pdoa_diff;
 pdoa_sum_square = sum(pdoa_square,1);
 sco_ppmin = min(pdoa_sum_square);
