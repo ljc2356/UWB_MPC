@@ -9,7 +9,7 @@ run("Properties.m"); %读取校准值 cali 和pdoa的测角天线参数
 antenna_num = length(antenna_index);
 %% 提取多径相对直射径的距离
 mpc_delay = (multi_path - los_path) / 1000000000 * 300000000;
-multi_path = round(multi_path)    ; %换算成整数索引，提取PDOA
+multi_path = round(multi_path);     %换算成整数索引，提取PDOA
 %% 提取多径的角度 
 for k = 1:8
     mpc_phase(1,k) = angle(Signal.uwbResult.cir{1,k}(multi_path,1));
@@ -17,7 +17,7 @@ for k = 1:8
 end
 mpc_pdoa = wrapToPi(mpc_pdoa - cali);   % 减去对应的校准值
 
-[mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , 0   ,  1.6  );
+[mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , -pi   ,  pi  );
 % [mpc_phi,~ ,sco_pp_mpc_] = AOA_ML_Mat(mpc_pdoa(antenna_index),antenna_index,fc , c , radius , -pi + 4.00  , -pi+  4.4416  );
 %% 整合数据，进行二次校准，准备输出
 
