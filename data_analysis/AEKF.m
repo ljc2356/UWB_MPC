@@ -1,4 +1,22 @@
 function [AEKF_Result] = AEKF(AEKF_Result , Time_index , Observation, Contrl, Motion_model, Obser_model,wrap_index, NR,NQ)
+% AEKF_Result  滤波结果 （结构体）
+%              m 待估计状态参数
+%              P 协方差矩阵
+%              Q 运动噪声协方差矩阵
+%              R 观测噪声协方差矩阵  （除此之外，还有一些跟AEKF相关的参数）
+% Time_index   时间序列
+% Obser_model  观测模型（结构体）
+%              hx 观测函数句柄
+%              JHx 观测雅各比矩阵计算函数句柄
+% Observation  观测量
+% Contrl       控制量
+% Motion_model 运动模型（结构体）
+%              fx 运动函数句柄
+%              JFx 运动雅各比矩阵计算函数句柄
+% wrap_index   int 值，待估计参数的第几维度是角度需要做 wrapToPi处理
+% NR NQ        AEKF 的相关参数，通常设置为10到200的大小，越大越接近EKF 
+
+
     i = Time_index;
     m_last = AEKF_Result.m(i-1 , :)';
     P_last = AEKF_Result.P{i-1};

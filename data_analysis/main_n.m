@@ -1,7 +1,7 @@
 clear all;clc;close all;
 %% 读取数据
 folder = './ml_data/20210413_indoor/';
-files_name = 'move_07.json';
+files_name = 'move_01.json';
 filenames{1} = [folder,files_name];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
@@ -58,10 +58,10 @@ start_index = 1;
 min_distance = 3;
 max_distance = 10;
 mpc_update_mat = zeros(1,1);
-mpc_select_style = 0;
+mpc_select_style = 1;
 if mpc_select_style == 1
     for i = start_index:useful_num
-        mpc_index_tem = MPCDetect(After_records(i,1).uwbResult.cir,Template,Conv_Template,mpc_select_style);
+        mpc_index_tem = MPCDetect(After_records(i,1).uwbResult.cir,Template,Conv_Template,0);
         if (isempty(mpc_index_tem) == 0)
             mpc_index(i,1:length(mpc_index_tem)) = mpc_index_tem;  % 获得多径的位置
         end
@@ -108,7 +108,7 @@ data_index = 1:useful_num;
 % data_index = 1:100;
 for i = data_index
     i
-    for antenna_num = 3:8
+    for antenna_num = 8
         index = antenna_num - 2 ;
         antenna_index = formation{antenna_num};
         ReadTime(After_records,index,i);
@@ -155,7 +155,7 @@ savejson('',result,files_name);
 data_folder = './data/20210413_indoor_update/';
 data_name = [data_folder,files_name(1:end - 5),'.mat'];
 save(data_name,"result");
-
+save("result.mat","result");
 
 % %% 绘制sco_pp图
 % close all;
