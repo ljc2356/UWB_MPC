@@ -1,19 +1,37 @@
 clear all; clc;close all;
-result = loadjson("move_01.json");
+result_ori = loadjson("move_01.json");
+
+iterResult = 100;
+UsefulIndex =427:430;
+
+mpc_d_bak = result_ori(1,6).mpc_d.data(UsefulIndex,:);
+mpc_d_bak = [mpc_d_bak;mpc_d_bak];
+mpc_phi_bak = result_ori(1,6).mpc_phi.data(UsefulIndex,:);
+mpc_phi_bak =[mpc_phi_bak;mpc_phi_bak];
+mpc_phi_bak(5,1) = mpc_phi_bak(5,1) + 2;
+mpc_d_bak(6,1) = mpc_d_bak(6,1) + 3;
+mpc_phi_bak(8,1) = mpc_phi_bak(5,1) + 1;
+
+result(1,6).mpc_d.data = [];
+result(1,6).mpc_phi.data = [];
+for i = 1:iterResult
+    result(1,6).mpc_d.data = [result(1,6).mpc_d.data;mpc_d_bak];
+    result(1,6).mpc_phi.data = [result(1,6).mpc_phi.data;mpc_phi_bak];
+end
 
 %% 数据格式化
 antenna_num = 8;
 index = antenna_num - 2;
 K = 2; %最大多径目标为8个
 dataNums = length(result(1,index).mpc_d.data);
-sigmaF0 = 0.5;
+sigmaF0 = 0.1;
 global sigmaR;
-sigmaR = 0.5;
-sigmaQ = 0.005;
+sigmaR = 0.4;       %观测噪声可以放松一点
+sigmaQ = 0.001;     %运动噪声要苛刻一些 否则会跟丢
 global Pd;
-Pd = 0.9;
-iterP =20 + 1;
-maxGMMNum = 50;
+Pd = 0.85;
+iterP =15 + 1;
+maxGMMNum = 30;
 
 
 result(1,index).mpc_phi.data(2,:) = result(1,index).mpc_phi.data(1,:) ;
@@ -172,7 +190,6 @@ for n = 2:dataNums
                 mu1 = Alpha.mu{n}{k}{g1};
                 sigma1 = Alpha.sigma{n}{k}{g1};
                 coeff1 = Alpha.coeff{n}{k}{g1};
-                
                 mu2 = Gamma.mu{n}{k}{g2};
                 sigma2 = Gamma.sigma{n}{k}{g2};
                 coeff2 = Gamma.coeff{n}{k}{g2};
@@ -218,6 +235,19 @@ for n = 2:dataNums
     end
 end
 
+prinA = [];
+for n = 2:dataNums
+    prinA = [prinA;assoA.P{n}{1}(2,:)];
+end
+
+prinB = [];
+for n = 2:dataNums
+    prinB = [prinB;assoB.P{n}{2}(2,:)];
+end
+
+
+prinA
+prinB
 
 
 

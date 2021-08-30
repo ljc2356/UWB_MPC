@@ -1,5 +1,5 @@
 function P = G_measure(x_nk,a_nk,Z_n)
-    f_FA = 1/(pi * 1000000000000000000005^2);
+    f_FA = 1/(pi * 15^2);
     global sigmaR;
     if a_nk == 0
         P = 1;
