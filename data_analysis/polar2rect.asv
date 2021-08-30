@@ -1,4 +1,0 @@
-function [x,y]= polar2rect(d,theta)
-    x = d * cos(theta);
-    y = d * sin(theta);
-end

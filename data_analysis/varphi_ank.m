@@ -1,6 +1,6 @@
 function result = varphi_ank(a_nk)
-    Pd = 0.85;
-    muFA = 1;
+    global Pd;
+    muFA = 0.00000000000001;
     if a_nk == 0
         result = 1 - Pd;
     else
