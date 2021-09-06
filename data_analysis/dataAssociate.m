@@ -1,35 +1,37 @@
 clear all; clc;close all;
 result_ori = loadjson("move_01.json");
 
-iterResult = 100;
-UsefulIndex =427:430;
-
-mpc_d_bak = result_ori(1,6).mpc_d.data(UsefulIndex,:);
-mpc_d_bak = [mpc_d_bak;mpc_d_bak];
-mpc_phi_bak = result_ori(1,6).mpc_phi.data(UsefulIndex,:);
-mpc_phi_bak =[mpc_phi_bak;mpc_phi_bak];
-mpc_phi_bak(5,1) = mpc_phi_bak(5,1) + 2;
-mpc_d_bak(6,1) = mpc_d_bak(6,1) + 3;
-mpc_phi_bak(8,1) = mpc_phi_bak(5,1) + 1;
-
-result(1,6).mpc_d.data = [];
-result(1,6).mpc_phi.data = [];
-for i = 1:iterResult
-    result(1,6).mpc_d.data = [result(1,6).mpc_d.data;mpc_d_bak];
-    result(1,6).mpc_phi.data = [result(1,6).mpc_phi.data;mpc_phi_bak];
-end
-
+% iterResult = 200;
+% UsefulIndex =427:430;
+% 
+% mpc_d_bak = result_ori(1,6).mpc_d.data(UsefulIndex,:);
+% mpc_d_bak = [mpc_d_bak;mpc_d_bak];
+% mpc_phi_bak = result_ori(1,6).mpc_phi.data(UsefulIndex,:);
+% mpc_phi_bak =[mpc_phi_bak;mpc_phi_bak];
+% 
+% mpc_d_bak(5,1) = mpc_d_bak(5,1) + 2;
+% mpc_d_bak(6,1) = mpc_d_bak(6,1) + 2;
+% mpc_d_bak(7,1) = mpc_d_bak(7,1) + 2;
+% mpc_d_bak(8,1) = mpc_d_bak(8,1) + 2;
+% 
+% result(1,6).mpc_d.data = [];
+% result(1,6).mpc_phi.data = [];
+% for i = 1:iterResult
+%     result(1,6).mpc_d.data = [result(1,6).mpc_d.data;mpc_d_bak];
+%     result(1,6).mpc_phi.data = [result(1,6).mpc_phi.data;mpc_phi_bak];
+% end
+result = result_ori;
 %% 数据格式化
 antenna_num = 8;
 index = antenna_num - 2;
-K = 2; %最大多径目标为8个
+K = 1;               %目标一定要匹配 否则收敛错误
 dataNums = length(result(1,index).mpc_d.data);
-sigmaF0 = 0.1;
+sigmaF0 = 0.1;       %初值最好确定一点 方差苛刻一点  太大则直接进入收敛态
 global sigmaR;
-sigmaR = 0.4;       %观测噪声可以放松一点
-sigmaQ = 0.001;     %运动噪声要苛刻一些 否则会跟丢
+sigmaR = 0.2;       %观测噪声可以放松一点
+sigmaQ = 0.01;     %运动噪声要苛刻一些 否则会跟丢
 global Pd;
-Pd = 0.85;
+Pd = 0.8;
 iterP =15 + 1;
 maxGMMNum = 30;
 
@@ -49,11 +51,11 @@ A = eye(2);
 for n = 1
     for k = 1:K
         if k<=length(find(result(1,index).mpc_d.data(1,:)))
-            F.mu{n}{k}{1} = polar2rect(result(1,index).mpc_d.data(1,k),result(1,index).mpc_phi.data(1,k));
+            F.mu{n}{k}{1} = polar2rect(result(1,index).mpc_d.data(1,k+1),result(1,index).mpc_phi.data(1,k+1));
             F.sigma{n}{k}{1} = sigmaF0;
             F.coeff{n}{k}{1} = 1;
         else
-            F.mu{n}{k}{1} = F.mu{1}{1}{1};
+            F.mu{n}{k}{1} = rand(2,1);
             F.sigma{n}{k}{1} = sigmaF0;
             F.coeff{n}{k}{1} = 1;
         end
@@ -235,20 +237,55 @@ for n = 2:dataNums
     end
 end
 
-prinA = [];
-for n = 2:dataNums
-    prinA = [prinA;assoA.P{n}{1}(2,:)];
+%% 分析结果
+% prinA = [];
+% for n = 2:dataNums
+%     prinA = [prinA;assoB.P{n}{1}(2,:)];
+% end
+% 
+% prinB = [];
+% for n = 2:dataNums
+%     prinB = [prinB;assoB.P{n}{2}(2,:)];
+% end
+% 
+% prinA
+% prinB
+
+%% 绘制跟踪结果
+figure(1)
+
+pic_num = 1;
+for n = 2:dataNums     % 旋转并记录每个画面
+   thisPos = zeros(MnMat(n,1),2);
+   for m = 1:MnMat(n,1)
+       thisPos(m,1:2) = polar2rect(Z{n}{m}(1,1),Z{n}{m}(1,2));
+   end
+   
+%    ;
+%    ;  % 以绘画函数来产生动画
+
+   prePos = F.mu{n}{1}{1};
+   hd(1) = scatter(thisPos(:,1),thisPos(:,2),50,"bo",'LineWidth',2);
+   hold on;
+   hd(2) = scatter(prePos(1),prePos(2),150,"rs",'LineWidth',2);
+   axis ([-10 10  -10 10])
+   hold off;
+   grid on;
+   
+    Fx=getframe(gcf);
+    I=frame2im(Fx);
+    [I,map]=rgb2ind(I,256);
+    
+    if pic_num == 1
+    imwrite(I,map,'test.gif','gif','Loopcount',inf,'DelayTime',0.2);
+
+    else
+    imwrite(I,map,'test.gif','gif','WriteMode','append','DelayTime',0.2);
+
+    end
+
+    pic_num = pic_num + 1;
+
 end
-
-prinB = [];
-for n = 2:dataNums
-    prinB = [prinB;assoB.P{n}{2}(2,:)];
-end
-
-
-prinA
-prinB
-
-
 
 
