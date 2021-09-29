@@ -1,11 +1,18 @@
 clear all;
-folder = './ml_data/20210628_indoor_6/';
-savaFolder = './data/20210628_indoor_6/';
+
+projectname = '20210822_11walkHall_4';
+folder = ['./ml_data/',projectname,'/'];
+saveFolder = ['./data/',projectname,'/'];
 File = dir(fullfile(folder,'*.json')); 
 FileNames = {File.name}';
 
+if isfolder(saveFolder)==0
+    mkdir(saveFolder);
+end
+
 file_num = length(FileNames);
 h = str2num(folder(end-1));
+baseAngle = 0;
 
  parpool(6)
 for i = 1:file_num
@@ -24,7 +31,7 @@ for i = 1:file_num
     end
     x = 4 + (x_index - 1)* 0.25;
     y = -1 + (y_index -1) * 0.5;
-    [d_los,d_mpc,diff_d_mpc,diff_index_mpc,index_mpc,phi_mpc,phi_los] = GenScenario(h,x,y);
+    [d_los,d_mpc,diff_d_mpc,diff_index_mpc,index_mpc,phi_mpc,phi_los] = GenScenario(h,x,y,baseAngle);
     los_pdoa = GenPDOA(phi_los);
     mpc_pdoa = GenPDOA(phi_mpc);
     for k = 1:useful_num
@@ -36,7 +43,7 @@ for i = 1:file_num
         After_records(k,1).mpc_label.phi_mpc = phi_mpc;
         After_records(k,1).mpc_label.pdoa_moc = mpc_pdoa;
     end
-    save_fillename = [savaFolder,FileNames{i,1}(1:end-5),'.mat'];
+    save_fillename = [saveFolder,FileNames{i,1}(1:end-5),'.mat'];
     save(save_fillename,'After_records');
 end
  delete(gcp('nocreate'))

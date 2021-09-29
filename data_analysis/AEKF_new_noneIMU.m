@@ -1,5 +1,5 @@
 clear all;clc;close all;
-load('data/20210413_indoor_update/move_02.mat')
+load('data/20210822_11201/move_01.mat')
 
 global result;
 
@@ -15,7 +15,7 @@ Delta_u = 0.01;
 
 antenna_num = 8;
 index = antenna_num - 2;
-init_state = [3    -1        0     0    0    0     4         0];
+init_state = [    1.242        0     0        0        0      0        -2.3         0];
 init_P =     [0.00001   0.00001    0.0001  0.0001  0.0001  0.0001  0.00001  0.00001] ;
 
 Los_result(index,1).antenna_num = antenna_num;
@@ -161,11 +161,39 @@ useful_num = length(result(index,1).los_d.data);
  save("Los_result.mat","Los_result");
  run("DrawTwoFast.m");
 
+groundtruth1(:,1) = [1.242:0.001:4.357];
+groundtruth1(:,2) = 0;
+groundtruth2(:,2) = [0:0.001:3,6];
+groundtruth2(:,1) = 4.357;
+groundtruth = [groundtruth1;groundtruth2];
+for i = 1:length(Los_result(6,1).m(:,1))
+    thisLos = Los_result(6,1).m(i,1:2);
+    thiserrorMat = groundtruth - thisLos;
+    thisSquareError = sqrt(sum(thiserrorMat .* thiserrorMat,2));
+    MpcError(i) = min(thisSquareError);
+end
 
-% 
-% 
-% 
-% 
+for i = 1:length(Mpc_result(6,1).m(:,1))
+    thisLos = Mpc_result(6,1).m(i,1:2);
+    thiserrorMat = groundtruth - thisLos;
+    thisSquareError = sqrt(sum(thiserrorMat .* thiserrorMat,2));
+    LosError(i) = min(thisSquareError);
+end
+
+
+figure(2)
+hold on;
+hdcdf(1) = cdfplot(MpcError);
+hdcdf(2) = cdfplot(LosError);
+set(hdcdf(1),'color','b','linewidth',2)
+set(hdcdf(2),'color','r','linewidth',2)
+legend("CDF of MPC and LOS","CDF of LOS")
+xlabel('Minimum Absolute Error [m]');
+ylabel(' CDF');
+grid on;
+set(gca,'FontSize',14);
+title('   ');
+
 
 
 

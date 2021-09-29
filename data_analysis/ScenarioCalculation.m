@@ -1,7 +1,7 @@
 % clear all;clc;close all;
-h = 5;
-x = 6.75;
-y = 0;
+h = -2;
+x = 4;
+y = 3.5;
 d_los = norm([x,y]);
 d_mpc = norm([x, h + h - y]);
 diff_d_mpc = d_mpc - d_los;
@@ -10,3 +10,5 @@ index_mpc = diff_index_mpc +8;
 phi_mpc = atan2(h+h-y, x);
 phi_index_mpc = (phi_mpc + pi)/0.01;
 phi_los = atan2(y,x);
+
+d_mpc

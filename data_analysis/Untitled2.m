@@ -1,7 +1,7 @@
 clear all;clc;close all;
 %% 读取数据
-folder = './ml_data/20210413_indoor/';
-files_name = 'mpc_04.json';
+folder = './ml_data/20210822_11201/';
+files_name = 'move_01.json';
 filenames{1} = [folder,files_name];  %读取分析数据参数
 records = loadRecordFile(filenames{1});
  
@@ -24,24 +24,9 @@ run("Properties.m");
 [sec_cali] = GenerateSecCali(cali_filenames,0);
 %% 生成模板
 [ Template, Conv_Template ] = GenerateTemplate(Back_filenames);
-%% 定位多径位置
-close all
-figure();
-hold on;
-Ori_CIR = abs(After_records(20,1).uwbResult.cir{1,2});
-for i = 2:8
-    Ori_CIR = Ori_CIR + (abs(After_records(20,1).uwbResult.cir{1,2}));
-end
-Ori_CIR = Ori_CIR/8;
-hd = plot(Ori_CIR);
-set(hd,'color','b','linewidth',2);
-xlabel('Time [ns]');
-ylabel('Amplitude');
-grid on;
-set(gca,'FontSize',14);
-legend("Original CIR Waveform of NLOS Condition");
 
 
+%% 识别多径
 mpc_index = zeros(useful_num,1);
 start_index = 1;
 min_distance = 3;
@@ -50,7 +35,7 @@ mpc_update_mat = zeros(1,1);
 mpc_select_style = 1;
 if mpc_select_style == 1
     for i = start_index:useful_num
-        mpc_index_tem = MPCDetect(After_records(i,1).uwbResult.cir,Template,Conv_Template,1);
+        mpc_index_tem = MPCDetect(After_records(i,1).uwbResult.cir,Template,Conv_Template,0);
         if (isempty(mpc_index_tem) == 0)
             mpc_index(i,1:length(mpc_index_tem)) = mpc_index_tem;  % 获得多径的位置
         end
@@ -90,54 +75,62 @@ elseif mpc_select_style == 0
 
      end
 end
-
- 
-
-data_index = 1:useful_num;
-% data_index = 1:100;
-for i = data_index
-    i
-    for antenna_num = 8
-        index = antenna_num - 2 ;
-        antenna_index = formation{antenna_num};
-        ReadTime(After_records,index,i);
-        
-        
-         %[D_Phi,sco_pp_los{antenna_num}(i,:) ] = los_analyse_form_Runtime(After_records(i,1),los_path,antenna_index,sec_cali);  %分析此数据的直达径
-         [D_Phi,~ ] = los_analyse_form_Runtime(After_records(i,1),los_path,antenna_index,sec_cali);  %分析此数据的直达径
-         result(index,1).los_d.data(i,1) = D_Phi(1);
-         result(index,1).los_phi.data(i,1) = D_Phi(2);
-         result(index,1).los_pdoa.data(i,:) = After_records(i,1).meaResult.pdoa;
-         
-         for mpc_th = 1:length(mpc_index(i,:))  % 如果是空的，则不会填写
-             if mpc_index(i,mpc_th) == 0
-                 result(index,1).mpc_d.data(i,mpc_th) = 0;
-                 result(index,1).mpc_phi.data(i,mpc_th) = 0;
-             else
-                 [D_Phi] = mpc_MUSIC_form_Runtime(After_records(i,1),mpc_index(i,mpc_th),los_path,antenna_index,sec_cali);
-    %                  [D_Phi,~] = mpc_analyse_form_Runtime(After_records(i,1),temp_mpc_index(mpc_th),los_path,antenna_index,sec_cali);
-                 result(index,1).mpc_d.data(i,mpc_th) = D_Phi(1);
-                 result(index,1).mpc_phi.data(i,mpc_th) = D_Phi(2);
-             end
-         end
-
-    end
-end
-
-% savejson('',result,files_name);
-
-
-
-
-%% 对角度进行离线滤波
-% std(result(index,1).los_phi.data)
-% mean(result(index,1).los_phi.data)
-
-% EKF_angle();
-% Flat_angle()
+%%   直接测角
+% for thisPoint = 1:10
+%     thisPoint
+%     for i = 1:8
+%         angleMat(i,:) = angle(After_records(thisPoint,1).uwbResult.cir{1,i});
+%     end
+%     %% 聚焦处理
+%     meanIndex = (round(mpc_index(thisPoint,1))):(round(mpc_index(thisPoint,1)));
+%     % 首达径
+%     for los_path = 1:50
+%         angleMat(1:8,los_path) = wrapToPi(angleMat(1:8,los_path) - cali');
+%         for i = 1:8
+%             pdoa(i) = angleMat(i,los_path) -angleMat(1,los_path);
+%         end
+% %         pdoa = wrapToPi(pdoa - cali); 
 % 
-% data_folder = ['./data/' ,  folder(11:end)];
-% data_name = [data_folder,files_name(1:end - 5),'.mat'];
-% save(data_name,"result");
-% save("result.mat","result");
-
+%         antenna_index = formation{8};
+%         [los_phi,~,sco_pp_los_] = AOA_ML_Mat(pdoa,antenna_index, fc , c , radius, -pi , pi);
+% 
+%         los_phi_mat(thisPoint,los_path) = los_phi;
+%     end
+%     los_phi_mat(thisPoint,meanIndex) = mean(los_phi_mat(thisPoint,meanIndex));
+% end
+%% MUSIC测角
+clear mpcAngle
+close all;
+figure(3)
+hold on;
+mpcAngle = zeros(useful_num,20);
+for thisPoint = 1:useful_num
+    thisPoint
+    for i = 1:8
+        CIRMat(i,:) = (After_records(thisPoint,1).uwbResult.cir{1,i});
+    end
+    for los_path = 1:50
+        CIRMat(1:8,los_path) = CIRMat(1:8,los_path).*exp(-1j*cali');
+    end
+    %
+    Rx = zeros(8,8);
+    meanIndex = (round(mpc_index(thisPoint,1))-4):(round(mpc_index(thisPoint,1))+5);
+    meanIndex = 1:50;
+    for los_path = meanIndex
+        Rx = Rx + CIRMat(1:8,los_path) * CIRMat(1:8,los_path)';
+    end
+    Rx = Rx / length(meanIndex);
+    [V,D] = eig(Rx);
+    En = V(:,4:end);
+    kk = 1;
+    theta_mat = -pi/2:0.001:pi/2;
+    A = AOA_Phi(theta_mat,fc,c,radius);
+    Pmu = 1./ diag(A' * En * En' * A);
+    Pmu = real(Pmu);
+    [pks,locs] = findpeaks(Pmu,theta_mat,'SortStr','descend');
+%     figure(3)
+    plot(theta_mat,Pmu)
+    mpcAngle(thisPoint,1:length(locs)) = locs;
+%     mpcAngle(thisPoint,1) = locs(1);
+%     mpcAngle(thisPoint,2) = locs(2);
+end

@@ -1,9 +1,0 @@
-clear all; clc; close all;
-%%
-load('move_03.mat')
-figure()
-fs_time = 0.05;
-time = 1:fs:length(result(6,1).los_d.data)*fs
-plot(result(6,1).los_d.data)
-xlabel('');
-ylabel('y');
